@@ -27,42 +27,9 @@
 			name="description"
 			content="BMGT Enterprise is a single-source supplier of industrial materials to shipbuilding, oil &amp; gas, construction and general engineering. Based in Dubai, U.A.E. Supplying worldwide." />
 
-		<!--
-			Social preview cards.
-
-			These have to be static, in this file, and cannot be left to Helmet.
-			The site is a client-rendered SPA with no prerender step, and the
-			crawlers that build link previews — Facebook, LinkedIn, WhatsApp,
-			Slack, X — do not execute JavaScript. They read this document and stop.
-			Anything PageShell adds on mount is invisible to them. Until these
-			existed, every shared link rendered as a bare URL with no image.
-
-			Deliberately no og:title / og:description / og:type / og:locale here:
-			PageShell sets those per page, and duplicating them statically would
-			leave two of each in the document for Helmet-aware readers, with the
-			crawler picking whichever it saw first — which would be the generic
-			one, on every page. The four below are the ones PageShell does not
-			set, so there is no overlap. Facebook falls back to the title and
-			description elements above when og:title is absent, which is exactly
-			the behaviour wanted for a no-JS crawler. (Tag names are spelled out
-			rather than written as markup: a literal tag inside a comment is
-			harmless to the parser but shows up in any grep for that element.)
-		-->
 		<meta
 			property="og:site_name"
 			content="BMGT Enterprise" />
-		<!--
-			⚠️ PRE-LAUNCH: make this an absolute URL once the production domain is
-			settled — https://<domain>/images/hero-port.jpg. The Open Graph spec
-			requires absolute; the major crawlers do resolve a root-relative path
-			against the page URL in practice, so this works today, but it is the
-			one tag where a spec-compliant value is worth having.
-
-			⚠️ Also worth a purpose-made asset. This is the 1536×1024 hero
-			photograph (3:2). Cards are 1.91:1, so the top and bottom are cropped
-			off. A 1200×630 export with the wordmark placed clear of the crop
-			would present far better.
-		-->
 		<meta
 			property="og:image"
 			content="/images/hero-port.jpg" />
@@ -142,6 +109,38 @@
      Kept inline and dependency-free so it runs ahead of the bundle. -->
 		<script>
 			(function () {
+				/*
+					Reload must start at the top of the document.
+
+					The browser default is history.scrollRestoration === "auto": on a
+					reload it puts the scroll position back where you left it, and it
+					does so before React mounts. Every scroll reveal is whileInView
+					with once: true, so each one whose element happened to be inside
+					that restored viewport fired and completed on the spot —
+					invisibly, because PageShell's useLayoutEffect then scrolled the
+					window back to the top. Scrolling down afterwards showed a page of
+					sections already sitting at their end state, and once: true meant
+					they could never replay.
+
+					That is why the home page looked unanimated on load but animated
+					correctly when reached by clicking through from another route: a
+					client navigation mounts fresh at the top, so nothing is skipped.
+
+					"manual" hands scroll position back to the app, which already owns
+					it — PageShell resets it per route.
+
+					Set here rather than in main.tsx deliberately: this runs before the
+					bundle is fetched, so it lands ahead of any restoration attempt.
+					Assigning it after React mounts is too late.
+				*/
+				try {
+					if ("scrollRestoration" in history) {
+						history.scrollRestoration = "manual";
+					}
+				} catch (e) {
+					/* Non-fatal: the reveals degrade to the old behaviour. */
+				}
+
 				try {
 					var stored = localStorage.getItem("BMGT.locale");
 					var fromPath = (location.pathname.match(/^\/(en|ar)(?=\/|$)/) ||

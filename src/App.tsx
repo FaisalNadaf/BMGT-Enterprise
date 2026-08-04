@@ -38,7 +38,30 @@ function Shell() {
       <ScrollProgress />
       <Header />
 
-      <AnimatePresence mode="wait" initial={false}>
+      {/* No `initial={false}` here, and it must not come back.
+       *
+       * It looks like it only suppresses the page's own fade on first load.
+       * It does not. AnimatePresence publishes `initial` on PresenceContext,
+       * which is ordinary React context and therefore reaches every motion
+       * component in the tree below it. framer-motion resolves each one with:
+       *
+       *   isInitialAnimationBlocked = presenceContext.initial === false
+       *   variantToSet = isInitialAnimationBlocked ? animate : initial
+       *
+       * Reveal has an `initial` and a `whileInView` but no `animate`, so with
+       * the flag set it rendered with no offset whatsoever — already at its
+       * final position — and whileInView then animated it to where it was.
+       * Every scroll reveal on a freshly loaded page was silently dead.
+       *
+       * It only affected the first mount: a client navigation creates a new
+       * PresenceChild with `initial` unset, which is why the same page animated
+       * correctly when reached by clicking through from another route and not
+       * when loaded directly.
+       *
+       * The cost of removing it is that the page now also fades in on first
+       * load, over pageVariants' 0.32s. That is a fair trade for the reveals,
+       * and honestly reads better than content appearing flat. */}
+      <AnimatePresence mode="wait">
         <motion.main
           id="main"
           /* Focusable so the skip link actually moves focus, not just scroll. */
