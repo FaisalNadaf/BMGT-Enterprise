@@ -42,6 +42,12 @@ export function PageShell({ title, description, children }: Props) {
         <meta property="og:description" content={description} />
         <meta property="og:type" content="website" />
         <meta property="og:locale" content={locale === 'ar' ? 'ar_AE' : 'en_GB'} />
+        {/* Same value as the canonical below. A card that omits og:url is
+            attributed to whatever URL was shared — including one carrying
+            tracking query strings — so shares of the same page fragment into
+            separate entries. og:image lives statically in index.html; see the
+            note there for why it cannot be set from here. */}
+        <meta property="og:url" content={href(locale)} />
         <link rel="canonical" href={href(locale)} />
         {LOCALES.map((l) => (
           <link key={l} rel="alternate" hrefLang={l} href={href(l)} />

@@ -7,14 +7,76 @@
 		<meta
 			name="viewport"
 			content="width=device-width, initial-scale=1" />
+		<!--
+			Pre-hydration defaults. react-helmet-async replaces the title and
+			description per page on mount; these are what a crawler that does not
+			run JS, or a visitor with JS off, actually sees.
+
+			Keep prose OUT of the title element. The content of a title element is
+			RCDATA: markup inside it is not parsed, so comment delimiters are
+			literal text rather than a comment. A note that drifts inside the tag
+			is silently rendered as part of the title itself — which is what had
+			happened here. The tab, and the Google result, read as a sentence
+			about react-helmet-async followed by a stray tag name and only then
+			the company. Anything explanatory belongs out here.
+		-->
 		<title>
-			/<meta> <!-- Per-page are injected by react-helmet-async; these are the
-			pre-hydration defaults a crawler or a JS-off visitor sees. --> <title>
 			BMGT Enterprise — industrial materials, supplied | Dubai, U.A.E.
 		</title>
 		<meta
 			name="description"
 			content="BMGT Enterprise is a single-source supplier of industrial materials to shipbuilding, oil &amp; gas, construction and general engineering. Based in Dubai, U.A.E. Supplying worldwide." />
+
+		<!--
+			Social preview cards.
+
+			These have to be static, in this file, and cannot be left to Helmet.
+			The site is a client-rendered SPA with no prerender step, and the
+			crawlers that build link previews — Facebook, LinkedIn, WhatsApp,
+			Slack, X — do not execute JavaScript. They read this document and stop.
+			Anything PageShell adds on mount is invisible to them. Until these
+			existed, every shared link rendered as a bare URL with no image.
+
+			Deliberately no og:title / og:description / og:type / og:locale here:
+			PageShell sets those per page, and duplicating them statically would
+			leave two of each in the document for Helmet-aware readers, with the
+			crawler picking whichever it saw first — which would be the generic
+			one, on every page. The four below are the ones PageShell does not
+			set, so there is no overlap. Facebook falls back to the title and
+			description elements above when og:title is absent, which is exactly
+			the behaviour wanted for a no-JS crawler. (Tag names are spelled out
+			rather than written as markup: a literal tag inside a comment is
+			harmless to the parser but shows up in any grep for that element.)
+		-->
+		<meta
+			property="og:site_name"
+			content="BMGT Enterprise" />
+		<!--
+			⚠️ PRE-LAUNCH: make this an absolute URL once the production domain is
+			settled — https://<domain>/images/hero-port.jpg. The Open Graph spec
+			requires absolute; the major crawlers do resolve a root-relative path
+			against the page URL in practice, so this works today, but it is the
+			one tag where a spec-compliant value is worth having.
+
+			⚠️ Also worth a purpose-made asset. This is the 1536×1024 hero
+			photograph (3:2). Cards are 1.91:1, so the top and bottom are cropped
+			off. A 1200×630 export with the wordmark placed clear of the crop
+			would present far better.
+		-->
+		<meta
+			property="og:image"
+			content="/images/hero-port.jpg" />
+		<meta
+			property="og:image:alt"
+			content="Container port at dusk — cranes, stacked containers and a berthed vessel." />
+		<!-- summary_large_image, not summary: the small card crops to a square
+		     thumbnail, which turns a wide port photograph into a crop of water. -->
+		<meta
+			name="twitter:card"
+			content="summary_large_image" />
+		<meta
+			name="twitter:image"
+			content="/images/hero-port.jpg" />
 
 		<link
 			rel="icon"
@@ -56,11 +118,23 @@
 			href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700&family=IBM+Plex+Mono:wght@500&family=Source+Sans+3:wght@400;600&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
 			rel="stylesheet" />
 
-		<link
-			rel="preload"
-			as="image"
-			href="/images/hero-port.jpg"
-			fetchpriority="high" />
+		<!--
+			The hero-port.jpg preload that used to sit here has been removed.
+
+			It was correct when the home hero was that photograph. The hero is a
+			<video> now with no poster, so hero-port.jpg is not on the home page at
+			all — and a <link rel="preload"> in this file applies to every route.
+			Every visitor to the busiest page was fetching 215 KB that nothing ever
+			referenced, and Chrome logs "preloaded using link preload but not used
+			within a few seconds" for it.
+
+			The image is still used by the Contact page hero, which does not need
+			the hint: PageHero already renders its <img> with fetchpriority="high",
+			so it is discovered and prioritised the moment that route paints.
+
+			Nothing replaces it. The home LCP is now the video, and preloading a
+			15 MB file would be far worse than the problem it solved.
+		-->
 
 		<!-- Sets lang/dir before the first paint. React and Helmet take over on
      mount, but without this the first frame renders LTR with the English
