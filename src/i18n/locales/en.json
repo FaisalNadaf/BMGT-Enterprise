@@ -1,0 +1,903 @@
+{
+	"ui": {
+		"skip": "Skip to content",
+		"nav": {
+			"home": "Home",
+			"about": "About",
+			"products": "Products",
+			"industries": "Industries",
+			"brands": "Brands",
+			"contact": "Contact",
+			"cta": "Get a quote",
+			"homeAria": "{{name}} — home",
+			"primary": "Primary",
+			"openMenu": "Open menu",
+			"closeMenu": "Close menu",
+			"menuLabel": "Site menu",
+			"mobile": "Mobile",
+			"language": "Language",
+			"switchTo": "Switch language to {{name}}"
+		},
+		"mega": {
+			"productsEyebrow": "Catalogue",
+			"productsTitle": "What we supply",
+			"productsFoot": "Eight categories, one point of contact.",
+			"productsCta": "View all products",
+			"industriesEyebrow": "Sectors",
+			"industriesTitle": "Industries we know from the inside",
+			"industriesFoot": "One point of contact across every sector.",
+			"industriesCta": "Get a quote"
+		},
+		"drawer": {
+			"menu": "Menu",
+			"products": "Products",
+			"industries": "Industries",
+			"home": "Home",
+			"about": "About Us",
+			"brands": "Brands",
+			"contact": "Contact Us",
+			"legal": "Legal",
+			"allProducts": "All products",
+			"cta": "Get a quote"
+		},
+		"footer": {
+			"blurb": "BMGT keeps expanding what it supplies and where it supplies it. This site is where we keep that current.",
+			"reach": "Reach us",
+			"products": "Products",
+			"industries": "Industries",
+			"company": "Company",
+			"address": "Address",
+			"allProducts": "All products",
+			"home": "Home",
+			"about": "About Us",
+			"brands": "Brands",
+			"contact": "Contact Us",
+			"legal": "Legal",
+			"rights": "© {{year}} {{name}}. All rights reserved.",
+			"credit": "Designed & Developed by",
+			"phoneLabel": "Phone",
+			"salesLabel": "Sales",
+			"infoLabel": "Info",
+			"directLabel": "Direct"
+		},
+		"cta": {
+			"eyebrow": "Contact",
+			"title": "Tell us what the project needs.",
+			"sub": "Send the spec, the quantity and the date. We will come back with how we would supply it.",
+			"action": "Contact us"
+		},
+		"home": {
+			"title": "Industrial materials, supplied",
+			"heroEyebrow": "Dubai, U.A.E. — supplying worldwide",
+			"heroSub": "One source for the materials that shipyards, rigs, sites and workshops run on — sourced properly, priced sensibly, delivered when we said we would.",
+			"heroPrimary": "Get a quote",
+			"heroSecondary": "See what we supply",
+			"scroll": "Scroll",
+			"industriesEyebrow": "Industries",
+			"industriesTitle": "Four sectors we know from the inside",
+			"exploreSector": "Explore sector",
+			"aboutEyebrow": "About",
+			"aboutTitle": "Your global partner in industrial materials",
+			"aboutP1": "Shipbuilding, ship repair, oil and gas, and construction are unforgiving sectors, and {{name}} was built for them. We source and supply industrial materials through a single point of contact, pairing modern sourcing with people who have worked these industries first-hand.",
+			"aboutP2": "Every order gets judged on three things: whether it moves fast, whether it holds up on site, and whether it was sourced responsibly. Our catalogue is broad and priced to keep project budgets intact — and we would rather keep a client for a decade than win one purchase order.",
+			"aboutCta": "More about us",
+			"aboutAlt": "The BMGT crew in coveralls, hard hats and high-visibility vests.",
+			"productsEyebrow": "Products",
+			"productsTitle": "What we supply",
+			"productsBody": "Eight categories, one point of contact. Send us the spec and the quantity — we quote from stock or source it to grade.",
+			"capabilitiesEyebrow": "Capabilities",
+			"capabilitiesTitle": "How we work, sector by sector",
+			"readMore": "Read more",
+			"brandsEyebrow": "Brands",
+			"brandsTitle": "Lines we carry",
+			"allBrands": "All brands"
+		},
+		"about": {
+			"title": "About Us",
+			"description": "BMGT Enterprise sources and supplies industrial materials to shipbuilding, oil & gas, construction and general engineering through a single point of contact. Based in Dubai, U.A.E.",
+			"heroEyebrow": "About",
+			"heroTitle": "Your global partner in industrial materials",
+			"heroSub": "Built for unforgiving sectors, run by people who have worked in them.",
+			"whoEyebrow": "Who we are",
+			"whoTitle": "One point of contact, one chain",
+			"whoP1": "Shipbuilding, ship repair, oil and gas, and construction are unforgiving sectors, and {{name}} was built for them. We source and supply industrial materials through a single point of contact, pairing modern sourcing with people who have worked these industries first-hand.",
+			"whoP2": "Our catalogue is broad and priced to keep project budgets intact — and we would rather keep a client for a decade than win one purchase order. That is not a slogan about service; it is the reason we will tell you when a part is three weeks out instead of letting you find out at the gate.",
+			"whoP3": "The company works out of Dubai and supplies worldwide, which puts us close to the yards, sites and rigs across the Gulf while keeping the sourcing reach that a project of any size needs.",
+			"howEyebrow": "How we work",
+			"howTitle": "Three questions, asked of every order",
+			"howIntro": "Every enquiry that comes through the door gets measured the same way, whether it is a single bearing or a tonnage of plate.",
+			"p1Title": "Does it move fast?",
+			"p1Body": "A quote that takes a week is a quote that has already cost you time. We answer with what we can supply, what the lead time is and where the risk sits — and if we cannot help, we say so on the same day rather than sitting on the enquiry.",
+			"p2Title": "Does it hold up on site?",
+			"p2Body": "Material that fails at the point of use costs far more than the saving that bought it. We quote what will do the job in service, and where a cheaper option exists we put both in front of you with the difference explained rather than quietly substituting.",
+			"p3Title": "Was it sourced responsibly?",
+			"p3Body": "We buy through established manufacturers and distributors, and we keep the chain traceable. Nothing about a low price is worth material of unknown origin arriving on a project that will be inspected.",
+			"sectorsEyebrow": "Sectors served",
+			"sectorsTitle": "Where our material ends up",
+			"exploreSector": "Explore sector",
+			"brandsCta": "Brands we carry",
+			"ctaTitle": "Work with a supplier who answers.",
+			"ctaSub": "Tell us about the project and we will tell you plainly what we can supply and when."
+		},
+		"products": {
+			"title": "Products",
+			"description": "Eight supply categories — electrical, valves and pumps, mechanical, marine, steel, construction, granite and PPE. Supplied by BMGT Enterprise, Dubai.",
+			"heroEyebrow": "Products",
+			"heroTitle": "What we supply",
+			"heroSub": "Eight categories, one point of contact. Send the spec and the quantity — we quote from stock or source it to grade.",
+			"indexEyebrow": "Catalogue",
+			"indexTitle": "Eight categories",
+			"indexIntro": "{{count}} line items across the catalogue, and a great deal that is not listed. If you do not see it, it is still worth asking.",
+			"lines_one": "{{count}} line",
+			"lines_other": "{{count}} lines",
+			"viewCategory": "View category"
+		},
+		"product": {
+			"description": "{{name}} — {{blurb}} Supplied by BMGT Enterprise, Dubai.",
+			"heroEyebrow": "Products",
+			"overviewEyebrow": "Overview",
+			"overviewTitle": "What we supply",
+			"requestQuote": "Request a quote",
+			"sendEnquiry": "Send an enquiry",
+			"scopeTitle": "Typical scope",
+			"catalogueEyebrow": "Catalogue",
+			"catalogueTitle_one": "{{count}} line in this category",
+			"catalogueTitle_other": "{{count}} lines in this category",
+			"noCatalogue": "No catalogue line list exists for this category yet — the previous site showed photographs here without naming the items. Send BMGT's {{name}} range and it will render here automatically.",
+			"ctaTitle": "Need {{name}}?",
+			"crumbProducts": "Products"
+		},
+		"industry": {
+			"description": "{{name}} — {{blurb}} BMGT Enterprise supplies industrial materials into this sector from Dubai, worldwide.",
+			"heroEyebrow": "Industries",
+			"capabilityEyebrow": "Capability",
+			"capabilityTitle": "How we work in this sector",
+			"practiceTitle": "What that means in practice",
+			"talkCta": "Talk to us about a project",
+			"sendEnquiry": "Send an enquiry",
+			"withinEyebrow": "Within this sector",
+			"withinTitle": "Two halves of the same job",
+			"readMore": "Read more",
+			"supplyEyebrow": "What we supply here",
+			"supplyTitle": "Categories that feed this sector",
+			"backTo": "Back to {{name}}",
+			"ctaTitle": "Supplying {{name}}.",
+			"crumbIndustries": "Industries",
+			"linesEyebrow": "Catalogue",
+			"linesTitle": "Lines we supply into this sector",
+			"linesCta": "View all products",
+			"whyEyebrow": "Why us",
+			"whyTitle": "Why work with us in this sector"
+		},
+		"brands": {
+			"title": "Brands",
+			"description": "Authorised and stocked lines from established industrial manufacturers, supplied by BMGT Enterprise, Dubai.",
+			"heroEyebrow": "Brands",
+			"heroTitle": "Lines we carry",
+			"manufacturersEyebrow": "Manufacturers",
+			"manufacturersTitle": "Eleven established names",
+			"manufacturersIntro": "Each mark is shown as its manufacturer presents it. The cells are a common size and weight so eleven logos of very different proportions still read as one set.",
+			"todo": "The eleven brand affiliations on this page were carried over from the previous site. Confirm each one for the Dubai entity, and remove any BMGT is not an authorised or stocking distributor for.",
+			"glanceEyebrow": "At a glance",
+			"glanceTitle": "The full set",
+			"logoAlt": "{{name}} logo",
+			"ctaTitle": "Looking for a particular make?",
+			"ctaSub": "Tell us the manufacturer and the part. If we do not stock it, we will tell you who does."
+		},
+		"contact": {
+			"title": "Contact Us",
+			"description": "Contact BMGT Enterprise — {{phone}}, {{email}}. Meydan Grandstand, Nad Al Sheba, Dubai, U.A.E.",
+			"heroEyebrow": "Contact",
+			"heroTitle": "Tell us what the project needs.",
+			"heroSub": "Send the spec, the quantity and the date. We will come back with how we would supply it.",
+			"formEyebrow": "Enquiry",
+			"formTitle": "Send us the details",
+			"name": "Name",
+			"company": "Company",
+			"email": "Email",
+			"phone": "Phone",
+			"message": "What do you need?",
+			"required": "(required)",
+			"messagePlaceholder": "Spec, quantity and the date you need it on site.",
+			"submit": "Send enquiry",
+			"formNote": "No backend is wired up yet — submitting opens your mail client with the enquiry filled in, addressed to {{email}}.",
+			"sent": "Your mail client should have opened with the enquiry addressed to {{email}}. If nothing happened, email us directly.",
+			"subject": "Enquiry from {{name}}",
+			"subjectWithCompany": "Enquiry from {{name}} — {{company}}",
+			"panelPhone": "Phone",
+			"panelEmail": "Email",
+			"panelAddress": "Address",
+			"panelHours": "Hours",
+			"hours": "Sunday to Thursday, 09:00 – 18:00 (GST)",
+			"locationEyebrow": "Location",
+			"locationTitle": "Meydan Grandstand, Dubai",
+			"mapTitle": "Map showing BMGT Enterprise at Meydan Grandstand, Nad Al Sheba, Dubai",
+			"openInMaps": "Open in Google Maps",
+			"mapLang": "en",
+			"callUs": "Call us",
+			"emailUs": "Email us",
+			"responseNote": "Quickest route to an answer during working hours.",
+			"messageHelp": "The more detail here, the closer the first quote lands."
+		},
+		"legal": {
+			"title": "Legal",
+			"description": "Privacy policy, terms of use and disclaimer for BMGT Enterprise.",
+			"heroEyebrow": "Legal",
+			"heroTitle": "Privacy, terms and disclaimer",
+			"heroSub": "Placeholder text pending the client's own legal review.",
+			"todo": "Every clause on this page is generic boilerplate, not legal advice, and has not been reviewed by a lawyer or checked against U.A.E. law. Replace it with BMGT's own policy before go-live.",
+			"tocLabel": "On this page",
+			"tocPrivacy": "Privacy",
+			"tocTerms": "Terms of use",
+			"tocDisclaimer": "Disclaimer",
+			"privacyEyebrow": "Your data",
+			"privacyTitle": "Privacy",
+			"privacyP1": "This site collects personal information only when you choose to send it — for example, by completing the enquiry form or by emailing one of the addresses published here. That information is used to respond to your enquiry and to supply the goods or services it concerns.",
+			"privacyCollectedH": "What is collected",
+			"privacyCollected1": "Details you submit through the enquiry form: name, company, email, phone and message.",
+			"privacyCollected2": "Correspondence you send to a published {{name}} address.",
+			"privacyNotH": "What is not collected",
+			"privacyNotP": "The site does not use analytics, advertising or social media tracking, and sets no cookies of its own.",
+			"privacyThirdH": "Third-party content",
+			"privacyThirdP": "Two things on this site are loaded from Google, which means your IP address reaches Google when they load. Web fonts are requested from Google Fonts on every page. The contact page embeds a Google Map, which loads only when you scroll to it and which may set cookies of its own under Google's terms.",
+			"privacyRetentionH": "Retention and sharing",
+			"privacyRetentionP": "Enquiry correspondence is kept for as long as needed to handle the enquiry and any resulting supply relationship. Information is not sold, and is shared with third parties only where necessary to fulfil an order.",
+			"privacyRightsH": "Your rights",
+			"privacyRightsP": "To ask what information is held about you, or to have it corrected or deleted, contact",
+			"termsEyebrow": "Using this site",
+			"termsTitle": "Terms of use",
+			"termsP1": "By using this website you accept these terms. If you do not accept them, please do not use the site.",
+			"termsContentH": "Content",
+			"termsContentP": "The text, images, layout and code of this site belong to {{name}} or to its licensors. You may view and print pages for your own reference; you may not republish, sell or systematically copy them without written permission.",
+			"termsMarksH": "Trade marks",
+			"termsMarksP": "Manufacturer names and logos shown on the Brands page are the trade marks of their respective owners and appear for identification only.",
+			"termsOrdersH": "Quotations and orders",
+			"termsOrdersP": "Nothing on this site is an offer to sell. Product descriptions are indicative, availability changes, and every supply is governed by the terms of the written quotation and order acknowledgement for that specific order.",
+			"termsLinksH": "Links",
+			"termsLinksP": "Links to other sites are provided for convenience. {{name}} is not responsible for their content.",
+			"certsEyebrow": "Standards",
+			"certsTitle": "Certifications",
+			"certsEmpty": "No certifications are listed yet. The previous site's certifications page could not be recovered, and nothing is claimed here that has not been confirmed. Send the certificate names, issuing bodies and expiry dates and this section will populate.",
+			"certsNote": "Certification details are supplied on request with any quotation.",
+			"disclaimerEyebrow": "Liability",
+			"disclaimerTitle": "Disclaimer",
+			"disclaimerP1": "The information on this site is provided in good faith and for general information only. Product categories, capabilities and specifications are described at a general level and are not technical advice. Do not rely on them for design, selection or compliance decisions — ask us for the specification of the actual item being supplied.",
+			"disclaimerP2": "{{name}} does not warrant that the site will be uninterrupted or error-free, and accepts no liability for loss arising from reliance on information published here.",
+			"disclaimerContactH": "Contact",
+			"disclaimerContactP": "Questions about this page:",
+			"disclaimerRights": "© {{year}} {{name}}. All rights reserved. Designed and developed by",
+			"ctaTitle": "Need something we have not covered?",
+			"ctaSub": "Ask us directly — we would rather answer a question than have you guess."
+		},
+		"notFound": {
+			"title": "Page not found",
+			"description": "That page does not exist on the BMGT Enterprise site.",
+			"heroEyebrow": "404 — Not found",
+			"heroTitle": "That page is not here",
+			"heroSub": "The address may be mistyped, or the page may have moved. The eight supply categories are below, or start again from the home page.",
+			"crumb": "Not found",
+			"backHome": "Back to home",
+			"contact": "Contact us",
+			"categories": "Supply categories"
+		},
+		"crumbs": {
+			"home": "Home",
+			"label": "Breadcrumb"
+		},
+		"carousel": {
+			"prev": "Previous slide",
+			"next": "Next slide",
+			"goTo": "Go to slide {{n}}"
+		}
+	},
+	"content": {
+		"products": {
+			"mechanical": {
+				"name": "Mechanical",
+				"shortName": "Mechanical",
+				"blurb": "Bearings, couplings, fasteners, drives and transmission parts.",
+				"intro": "The rotating and fastening parts that keep plant turning. Bearings, couplings, drives and the consumables around them, held broad and deep enough that a maintenance list does not have to be split across four vendors.",
+				"detail": "Most mechanical enquiries reach us mid-breakdown, so we treat them that way: identify from a part number, a photograph or a worn sample, then quote what is available now against what is available correctly. We will tell you which is which.",
+				"capabilities": [
+					"Bearings, housings and lubrication",
+					"Couplings, belts, chains and drive components",
+					"Fasteners in commercial and marine grades",
+					"Seals, bushings and wear parts",
+					"Hand and power tools for maintenance crews"
+				],
+				"sub": {
+					"bearings": {
+						"name": "Bearings",
+						"line": "Ball, roller and plain bearings with housings and lubrication."
+					},
+					"couplings": {
+						"name": "Couplings",
+						"line": "Rigid, flexible and fluid couplings for shaft-to-shaft drive."
+					},
+					"belts": {
+						"name": "Belts",
+						"line": "V-belts, timing and flat belts for power transmission."
+					},
+					"pulleys": {
+						"name": "Pulleys",
+						"line": "Drive and idler pulleys for belt transmission."
+					},
+					"chain-sprockets": {
+						"name": "Chain sprockets",
+						"line": "Sprockets and chain for conveyor and drive duty."
+					},
+					"motors": {
+						"name": "Motors",
+						"line": "Electric motors for drives, pumps and workshop plant."
+					},
+					"springs": {
+						"name": "Springs",
+						"line": "Compression, tension and torsion springs to sample or drawing."
+					},
+					"nuts-and-bolts": {
+						"name": "Nuts and bolts",
+						"line": "Fasteners in commercial and marine grades, metric and imperial."
+					},
+					"pneumatic-and-hydraulic-hoses-and-fittings": {
+						"name": "Pneumatic and hydraulic hoses & fittings",
+						"line": "Hose, couplings and fittings for air and hydraulic lines."
+					}
+				}
+			},
+			"pumps-and-valves": {
+				"name": "Valves & Pumps",
+				"shortName": "Valves & Pumps",
+				"blurb": "Flow control and fluid handling across pressure classes.",
+				"intro": "Flow control for systems that cannot be taken offline for long. We supply valves, pumps and the fittings around them across the body materials and pressure classes these sectors specify, sourced against your line list rather than picked off a catalogue page.",
+				"detail": "Valve work lives or dies on documentation, so we handle the paperwork alongside the parts and flag anything that will not arrive with what your inspector expects. Replacement and refit enquiries are welcome even when the original supplier is long gone.",
+				"capabilities": [
+					"Gate, globe, ball, butterfly and check valves",
+					"Actuated and manually operated assemblies",
+					"Centrifugal and positive-displacement pumps",
+					"Seals, gaskets and gland packing",
+					"Flanges, fittings and pipe supports"
+				],
+				"sub": {
+					"gate-valves": {
+						"name": "Gate valves",
+						"line": "Full-bore isolation for infrequent operation."
+					},
+					"ball-valves": {
+						"name": "Ball valves",
+						"line": "Quarter-turn isolation for on/off service."
+					},
+					"butterfly-valves": {
+						"name": "Butterfly valves",
+						"line": "Compact quarter-turn isolation at larger bores."
+					},
+					"globe-valves": {
+						"name": "Globe valves",
+						"line": "Throttling and regulation where flow control matters."
+					},
+					"check-valves-nrv": {
+						"name": "Check valves / NRV",
+						"line": "Non-return protection against backflow."
+					},
+					"needle-valves": {
+						"name": "Needle valves",
+						"line": "Fine metering on instrument and sampling lines."
+					},
+					"plug-valves": {
+						"name": "Plug valves",
+						"line": "Tapered-plug isolation for viscous and dirty media."
+					},
+					"foot-valves": {
+						"name": "Foot valves",
+						"line": "Suction-line retention with integral strainer."
+					},
+					"balancing-valves": {
+						"name": "Balancing valves",
+						"line": "Flow distribution across circuits and risers."
+					},
+					"pressure-reducing-valves": {
+						"name": "Pressure reducing valves",
+						"line": "Downstream pressure held to a set point."
+					},
+					"air-release-valves": {
+						"name": "Air release valves",
+						"line": "Trapped air vented from pipelines and mains."
+					},
+					"fire-hydrant-valves": {
+						"name": "Fire hydrant valves",
+						"line": "Landing and hydrant valves for firefighting mains."
+					},
+					"strainers": {
+						"name": "Strainers",
+						"line": "Y-type and basket strainers protecting downstream plant."
+					},
+					"centrifugal-pumps": {
+						"name": "Centrifugal pumps",
+						"line": "General transfer duty across clean and process media."
+					},
+					"positive-displacement-pumps": {
+						"name": "Positive displacement pumps",
+						"line": "Fixed volume per revolution for viscous duty."
+					},
+					"diaphragm-pumps": {
+						"name": "Diaphragm pumps",
+						"line": "Air-operated transfer for abrasive and shear-sensitive fluids."
+					},
+					"gear-pumps": {
+						"name": "Gear pumps",
+						"line": "Oil and viscous fluid transfer at steady flow."
+					},
+					"screw-pumps": {
+						"name": "Screw pumps",
+						"line": "Low-pulsation transfer for lubricating and fuel oils."
+					},
+					"piston-pumps": {
+						"name": "Piston pumps",
+						"line": "Reciprocating duty where discharge pressure is high."
+					},
+					"submersible-pumps": {
+						"name": "Submersible pumps",
+						"line": "Drainage, dewatering and borehole duty."
+					},
+					"fire-hydrant-pumps": {
+						"name": "Fire hydrant pumps",
+						"line": "Pump sets for hydrant and sprinkler mains."
+					},
+					"drum-pumps": {
+						"name": "Drum pumps",
+						"line": "Barrel and IBC decanting for chemicals and oils."
+					}
+				}
+			},
+			"shipbuilding": {
+				"name": "Shipbuilding, Ship Repair & Yacht Refits",
+				"shortName": "Shipbuilding & Refits",
+				"blurb": "Hull plate through to fit-out, sourced for marine service.",
+				"intro": "A yard needs one supplier who understands that a vessel in dock is costing money every hour. We cover the material chain from hull plate through to fit-out, sourced for marine service rather than adapted to it.",
+				"detail": "Newbuild, repair and refit all pull on different parts of that chain, and a refit especially rarely arrives with a tidy bill of materials. Send us what you have — a survey list, a photograph, a class requirement — and we will work it into something quotable.",
+				"capabilities": [
+					"Hull and structural plate",
+					"Marine pipework, valves and fittings",
+					"Deck hardware, mooring and lifting equipment",
+					"Electrical and switchgear for marine service",
+					"Paints, consumables and refit fit-out items"
+				],
+				"sub": {
+					"bollards": {
+						"name": "Bollards",
+						"line": "Mooring bollards and bitts for deck and quay."
+					},
+					"fairleads-and-cleats": {
+						"name": "Fairleads and cleats",
+						"line": "Deck fittings for mooring line handling."
+					},
+					"chocks-and-mooring-pipes": {
+						"name": "Chocks and mooring pipes",
+						"line": "Hull and deck passages for mooring lines."
+					},
+					"mooring-and-towing-ropes": {
+						"name": "Mooring and towing ropes",
+						"line": "Rope and line for mooring and towing duty."
+					},
+					"anchors": {
+						"name": "Anchors",
+						"line": "Anchors and the ground tackle around them."
+					},
+					"windows-and-scuttles": {
+						"name": "Windows & scuttles",
+						"line": "Marine windows, scuttles and side lights."
+					},
+					"manholes": {
+						"name": "Manholes",
+						"line": "Access covers and manhole assemblies for tanks."
+					},
+					"flexible-couplings": {
+						"name": "Flexible couplings",
+						"line": "Shaftline couplings for propulsion and auxiliaries."
+					},
+					"lashing-cargo-deck-and-yard-equipment": {
+						"name": "Lashing, cargo, deck & yard equipment",
+						"line": "Securing and handling equipment for deck and yard."
+					},
+					"components-for-steel-ships": {
+						"name": "Components for steel ships",
+						"line": "Structural and outfitting components for steel hulls."
+					},
+					"components-for-frp-and-aluminium-boats": {
+						"name": "Components for FRP & aluminium boats",
+						"line": "Fittings and components for composite and alloy craft."
+					},
+					"megafiller-primer-paints-antifouling": {
+						"name": "Megafiller, primer, paints, antifouling",
+						"line": "Fillers, primers, topcoats and antifouling systems."
+					}
+				}
+			},
+			"steel": {
+				"name": "Steel",
+				"shortName": "Steel",
+				"blurb": "Plate, sections, bar and pipe in project quantities.",
+				"intro": "Structural and general steel in project quantities — plate, sections, bar and pipe, delivered in the sizes the drawing actually calls for rather than the sizes that happen to be on a shelf.",
+				"detail": "We quote against a cutting list as readily as against a tonnage, and can arrange cutting, drilling and profiling so material arrives closer to ready. Where a grade matters, it is stated on the paperwork and not assumed.",
+				"capabilities": [
+					"Plate and sheet",
+					"Beams, channels, angles and hollow sections",
+					"Round, flat and square bar",
+					"Pipe, tube and fittings",
+					"Cut, drilled and profiled to requirement"
+				],
+				"sub": {
+					"steel-plates": {
+						"name": "Steel plates",
+						"line": "Plate and sheet in structural and general grades."
+					},
+					"steel-profiles": {
+						"name": "Steel profiles",
+						"line": "Beams, channels, angles and hollow sections."
+					},
+					"steel-pipes": {
+						"name": "Steel pipes",
+						"line": "Seamless and welded pipe across schedules."
+					},
+					"steel-pipe-fittings": {
+						"name": "Steel pipe fittings",
+						"line": "Elbows, tees, reducers and caps."
+					},
+					"steel-flanges": {
+						"name": "Steel flanges",
+						"line": "Flanges across faces and pressure classes."
+					}
+				}
+			},
+			"electrical": {
+				"name": "Electrical",
+				"shortName": "Electrical",
+				"blurb": "Cabling, switchgear, panel components and site power.",
+				"intro": "Power distribution for yards, sites and plant rooms — from the cable pulled through a hull to the board that feeds a tower crane. We quote from stock where we hold it and source to specification where we do not, which keeps an entire electrical scope with one supplier and one point of contact.",
+				"detail": "Send us the schedule or the single-line drawing and we will come back with what we can supply, what we would substitute and what the lead time looks like. Where a project calls for a particular manufacturer, we say so rather than quoting an equivalent and hoping it passes.",
+				"capabilities": [
+					"Cable, cable accessories, glands and terminations",
+					"Switchgear and distribution boards",
+					"Panel components, controls and instrumentation",
+					"Lighting and temporary site power",
+					"Containment, tray, trunking and conduit"
+				],
+				"sub": {
+					"cable-trays": {
+						"name": "Cable trays",
+						"line": "Tray, ladder and containment for cable routing."
+					},
+					"power-cables": {
+						"name": "Power cables",
+						"line": "LV and MV power cable in copper and aluminium."
+					},
+					"flexible-cable": {
+						"name": "Flexible cable",
+						"line": "Trailing and flexible cable for movable plant."
+					},
+					"welding-cables": {
+						"name": "Welding cables",
+						"line": "Flexible welding cable and connection accessories."
+					},
+					"switchgear": {
+						"name": "Switchgear",
+						"line": "Distribution boards, panels and switchgear assemblies."
+					},
+					"circuit-breakers": {
+						"name": "Circuit breakers",
+						"line": "MCB, MCCB and ACB protection across ratings."
+					},
+					"contactors": {
+						"name": "Contactors",
+						"line": "Switching for motor and load circuits."
+					},
+					"control-gear": {
+						"name": "Control gear",
+						"line": "Control components for panels and starter assemblies."
+					},
+					"starters": {
+						"name": "Starters",
+						"line": "Direct-on-line, star-delta and soft starters."
+					},
+					"relays": {
+						"name": "Relays",
+						"line": "Control, protection and timing relays."
+					},
+					"power-capacitors": {
+						"name": "Power capacitors",
+						"line": "Power-factor correction capacitors and banks."
+					},
+					"motors": {
+						"name": "Motors",
+						"line": "Electric motors for drives, pumps and site plant."
+					}
+				}
+			},
+			"construction": {
+				"name": "Construction",
+				"shortName": "Construction",
+				"blurb": "Bulk raw materials through to finishing hardware.",
+				"intro": "Everything a site consumes, from the first pour to the last handle. Bulk raw material at the beginning of a programme and finishing hardware at the end are very different supply problems, and we would rather solve both than hand one back.",
+				"detail": "Deliveries are scheduled against your programme, not ours, and phased where storage on site is tight. If something is going to slip, you hear it from us before it becomes your problem.",
+				"capabilities": [
+					"Rebar, mesh and structural steel",
+					"Cement, aggregate and formwork materials",
+					"Fixings, anchors and site consumables",
+					"Plumbing, drainage and electrical first fix",
+					"Finishing hardware and ironmongery"
+				],
+				"sub": {
+					"plywood": {
+						"name": "Plywood",
+						"line": "Structural, shuttering and finish-grade plywood."
+					},
+					"gypsum-boards": {
+						"name": "Gypsum boards",
+						"line": "Board and partition systems for internal fit-out."
+					},
+					"anchor-bolts": {
+						"name": "Anchor bolts",
+						"line": "Cast-in and post-installed anchors and fixings."
+					},
+					"imperial-red-lakha-red": {
+						"name": "Imperial Red / Lakha Red",
+						"line": "Red dimension granite for cladding and paving."
+					},
+					"royal-black-tiger-black": {
+						"name": "Royal Black / Tiger Black",
+						"line": "Black dimension granite for cladding and finish work."
+					}
+				}
+			},
+			"granite": {
+				"name": "Granite",
+				"shortName": "Granite",
+				"blurb": "Dimension stone and slab supply for build and finish work.",
+				"intro": "Dimension stone for build and finish work — slabs, cladding, paving and cut-to-size pieces, supplied for projects where the stone has to match across a whole elevation and not just across one crate.",
+				"detail": "Stone is the one category where a photograph is not enough, so we work from samples and batch references and will tell you plainly when a run cannot be matched from the same block.",
+				"capabilities": [
+					"Slabs and dimension stone",
+					"Cladding, flooring and paving",
+					"Countertops and vanity units",
+					"Kerbs, sills and thresholds",
+					"Cut-to-size, edge and surface finishing"
+				],
+				"sub": {
+					"finished-granite": {
+						"name": "Finished granite",
+						"line": "Cut, edged and polished stone ready to install."
+					},
+					"raw-granite": {
+						"name": "Raw granite",
+						"line": "Block and rough slab supplied for onward processing."
+					}
+				}
+			},
+			"ppe": {
+				"name": "Personal Protective Equipment (PPE)",
+				"shortName": "PPE",
+				"blurb": "Site-rated protective gear for crews on and offshore.",
+				"intro": "Protective equipment for crews working on site, in yards and offshore. Kit that gets worn for a twelve-hour shift has to fit and last, so we supply it as a standing line rather than an afterthought bolted onto a materials order.",
+				"detail": "We can hold repeat items against a call-off so replacement gear is not a fresh procurement exercise every quarter. Sizing runs and consumable rates are worth agreeing up front.",
+				"capabilities": [
+					"Head, eye and hearing protection",
+					"Hand protection across cut and chemical ratings",
+					"Coveralls, high-visibility and flame-retardant clothing",
+					"Safety footwear",
+					"Fall arrest, harnesses and confined-space equipment"
+				],
+				"sub": {}
+			}
+		},
+		"industries": {
+			"shipbuilding": {
+				"name": "Shipbuilding, Ship Repair & Yacht Refits",
+				"shortName": "Shipbuilding & Repair",
+				"blurb": "Materials that keep yards moving and vessels seaworthy.",
+				"lead": "From hull plate to switchgear, we supply yards and repair docks worldwide. Less a vendor, more the crew handling your material chain.",
+				"detail": "Newbuild, repair and refit each pull on a different part of that chain. A newbuild programme wants steady, scheduled supply against a bill of materials; a vessel in dock wants an answer this afternoon. We are set up for both, and we would rather tell you a part is three weeks out than let you find out at the quayside.",
+				"points": [
+					"Newbuild supply scheduled against the build programme",
+					"Repair and dry-dock enquiries handled at short notice",
+					"Yacht refit and fit-out items sourced to specification",
+					"Documentation prepared alongside the material"
+				],
+				"why": {
+					"0": {
+						"title": "One yard, one contact",
+						"body": "Hull plate, pipework, switchgear and deck fittings come off the same order rather than four. When something is late you ring one number, and whoever answers already knows the job."
+					},
+					"1": {
+						"title": "Built around dock time",
+						"body": "A vessel in dock costs money by the hour. Repair enquiries are answered the same day where we can, and flagged honestly where we cannot — you hear a three-week lead time now, not at the quayside."
+					},
+					"2": {
+						"title": "Documented as it ships",
+						"body": "Class and survey paperwork travels with the material rather than behind it, so nothing arrives that your surveyor then has to chase."
+					}
+				}
+			},
+			"construction": {
+				"name": "Construction",
+				"shortName": "Construction",
+				"blurb": "Supply that lifts the whole project, from groundwork to finish.",
+				"lead": "Whatever the site, whatever the stage — bulk raw material through to final fittings. Deliveries land when promised and someone always picks up the phone.",
+				"detail": "Construction supply is a scheduling problem as much as a sourcing one. Material that arrives early is material you have to store and guard; material that arrives late stops a trade. We phase deliveries against your programme and keep one contact across the whole job, from groundwork through to handover.",
+				"points": [
+					"Bulk material phased against the site programme",
+					"Single point of contact across every trade package",
+					"Finishing hardware and stone handled by the same team",
+					"Deliveries confirmed before they are promised"
+				],
+				"why": {
+					"0": {
+						"title": "Phased to your programme",
+						"body": "Material that lands early is material you have to store and guard. Deliveries are split to follow the build sequence, and confirmed before they leave rather than after."
+					},
+					"1": {
+						"title": "Every stage, one supplier",
+						"body": "Groundwork through to ironmongery, stone included. You are not re-tendering each package to a new vendor halfway down the programme."
+					},
+					"2": {
+						"title": "Told before it slips",
+						"body": "If a delivery is going to move, you hear it from us while there is still time to reorder the trades around it."
+					}
+				}
+			},
+			"building": {
+				"name": "Building & Civil Works",
+				"shortName": "Building & Civil Works",
+				"blurb": "Structure, envelope and first fix for buildings and civils.",
+				"lead": "The structural and first-fix half of a construction package: rebar, sections, formwork materials, fixings and the consumables a site burns through before anyone thinks about finishes.",
+				"detail": "This is the stage where quantities are large and substitutions are consequential, so we quote against the schedule rather than a round number and confirm each release before it leaves. Where a programme moves — and it does — the call-off moves with it.",
+				"points": [
+					"Rebar, mesh and structural sections",
+					"Formwork, cement and aggregate supply",
+					"Fixings, anchors and site consumables",
+					"Plumbing, drainage and electrical first fix"
+				],
+				"why": {
+					"0": {
+						"title": "Quoted against the schedule",
+						"body": "Structural quantities are large enough that a rounded number is not much use. We price from the bar schedule and the cutting list, and confirm each release before it leaves."
+					},
+					"1": {
+						"title": "Substitutions put in writing",
+						"body": "Where a section or a grade is not available we say so and put the alternative in front of you, rather than sending something close and letting the inspector find it."
+					},
+					"2": {
+						"title": "Call-offs that move with you",
+						"body": "Programmes shift. The release dates shift with them, without renegotiating the order every time the sequence changes."
+					}
+				}
+			},
+			"granite": {
+				"name": "Granite",
+				"shortName": "Granite",
+				"blurb": "Dimension stone for facades, floors and finish work.",
+				"lead": "Stone supply for the finishing end of a build — cladding, flooring, paving and cut-to-size work where the material has to read consistently across a whole elevation.",
+				"detail": "Stone cannot be bought sight-unseen, so we work from samples and batch references and are straight about what can and cannot be matched from a single block. Cutting, edging and finishing are arranged so pieces arrive closer to installable.",
+				"points": [
+					"Slabs, cladding and paving",
+					"Cut-to-size, edge and surface finishing",
+					"Batch matching handled from samples",
+					"Kerbs, sills, thresholds and countertops"
+				],
+				"why": {
+					"0": {
+						"title": "Matched from samples",
+						"body": "Stone cannot be bought sight unseen. We work from physical samples and batch references, and say plainly when a run cannot be matched from one block."
+					},
+					"1": {
+						"title": "Cut closer to installable",
+						"body": "Cutting, edging and surface finishing are arranged before delivery, so pieces arrive ready to fix rather than ready to fabricate."
+					},
+					"2": {
+						"title": "One elevation, one batch",
+						"body": "Where a facade has to read consistently, the quantity is reserved from the same block at the point of order rather than topped up later."
+					}
+				}
+			},
+			"oil-and-gas": {
+				"name": "Oil & Gas",
+				"shortName": "Oil & Gas",
+				"blurb": "Parts and materials that keep operations running without pause.",
+				"lead": "Rigs, refineries and pipelines run on parts arriving on time. We handle sourcing, documentation and logistics so the schedule holds.",
+				"detail": "Shutdown windows do not move, and a part that arrives without the right paperwork has not really arrived. We work backwards from the date the material is needed on site and keep the documentation moving alongside the goods rather than behind them.",
+				"points": [
+					"Shutdown and turnaround supply planned to the window",
+					"Documentation handled alongside the material",
+					"Logistics coordinated to site, not just to port",
+					"Repeat and consumable lines held against call-off"
+				],
+				"why": {
+					"0": {
+						"title": "Planned to the window",
+						"body": "Shutdown dates do not move. We work backwards from the date material is needed on site, and tell you early if a line is not going to make it."
+					},
+					"1": {
+						"title": "Paperwork with the parts",
+						"body": "A part without its certification has not really arrived. Documentation is prepared alongside the goods and checked before dispatch, not after a rejection."
+					},
+					"2": {
+						"title": "Delivered to site, not to port",
+						"body": "Logistics are coordinated through to the location, including the last leg that usually gets handed back to the client."
+					}
+				}
+			},
+			"general-engineering": {
+				"name": "General Engineering",
+				"shortName": "General Engineering",
+				"blurb": "Precision components and deep inventory for every build.",
+				"lead": "Bearings, couplings, valves and the precision parts around them. We work alongside your engineers rather than quoting off a list.",
+				"detail": "Workshops and fabricators tend to need a little of a lot, and the cost of that is usually spread across half a dozen accounts. Consolidating it with one supplier is worth more than a line-by-line saving, and it means an obsolete part becomes our problem to identify rather than yours.",
+				"points": [
+					"Broad catalogue consolidated onto one account",
+					"Obsolete and hard-to-identify parts traced from samples",
+					"Workshop consumables and tooling alongside components",
+					"Engineer-to-engineer conversations, not order-taking"
+				],
+				"why": {
+					"0": {
+						"title": "Consolidated onto one account",
+						"body": "A little of a lot, across half a dozen categories, on one order and one invoice instead of six separate ones."
+					},
+					"1": {
+						"title": "Obsolete parts identified",
+						"body": "Send a photograph, a worn sample, or a number off a plate. Tracing what it is becomes our problem rather than yours."
+					},
+					"2": {
+						"title": "Engineer to engineer",
+						"body": "Quotes come back with what we would substitute and why, rather than a line-by-line price against a list nobody read."
+					}
+				}
+			}
+		},
+		"brands": {
+			"legrand": {
+				"field": "Electrical"
+			},
+			"black-decker": {
+				"field": "Tools"
+			},
+			"fag": {
+				"field": "Bearings"
+			},
+			"schneider-electric": {
+				"field": "Electrical"
+			},
+			"makita": {
+				"field": "Tools"
+			},
+			"polycab": {
+				"field": "Cable"
+			},
+			"skf": {
+				"field": "Bearings"
+			},
+			"janatics": {
+				"field": "Pneumatics"
+			},
+			"elgi": {
+				"field": "Compressors"
+			},
+			"kirloskar": {
+				"field": "Pumps"
+			},
+			"siemens": {
+				"field": "Electrical"
+			},
+			"note": "Authorised and stocked lines from established industrial manufacturers."
+		},
+		"site": {
+			"tagline": "Strong foundations. Supplied.",
+			"description": "BMGT Enterprise is a single-source supplier of industrial materials to shipbuilding, oil & gas, construction and general engineering. Based in Dubai, U.A.E. Supplying worldwide.",
+			"addressShort": "Nad Al Sheba, Dubai, U.A.E.",
+			"addressLines": [
+				"Meydan Grandstand, 6th Floor,",
+				"Meydan Road, Nad Al Sheba,",
+				"PO Box 191618,",
+				"Dubai, United Arab Emirates"
+			]
+		}
+	}
+}

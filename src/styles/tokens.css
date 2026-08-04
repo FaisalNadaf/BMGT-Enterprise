@@ -1,0 +1,90 @@
+/* ==========================================================================
+   TOKENS — carried over verbatim from the HTML/CSS demo.
+   The contrast-derived values are not decorative: each one was measured.
+   Do not swap a token for a "close enough" hex without re-checking the ratio
+   noted beside it.
+   ========================================================================== */
+
+:root {
+  /* Palette */
+  --ink:        #0B1F33;  /* headings, deep navy */
+  --blue:       #0E5C9E;  /* primary brand blue, buttons, links — 6.90:1 on white */
+  --blue-deep:  #072F52;  /* dark section backgrounds */
+  --accent:     #17A2B8;  /* teal accent — rules, borders, focus rings */
+  --paper:      #FFFFFF;  /* page background */
+  /* Deepened from the brief's #EFF4F9 — that tint was so close to white the
+     alternating sections barely registered. #E4ECF5 still clears the 4.5:1
+     floor for --steel body copy (4.60:1). */
+  --mist:       #E4ECF5;  /* alternating section tint */
+  /* Lighter than --mist, for image wells that sit inside a white card on a
+     --mist section. It has to differ from both, or a cut-out product shot on
+     white merges into the card and the section swallows the card's top edge.
+     Background only — nothing sets text on it. */
+  --mist-soft:  #F2F7FC;
+  --steel:      #5A6B7C;  /* body copy, muted text */
+  --line:       #D9E2EC;  /* hairlines, card borders */
+
+  /* Derived, contrast-driven. --accent at 0.72rem scores 3.04:1 on white,
+     below the 4.5:1 floor, so eyebrow/label TEXT uses these instead. --accent
+     itself stays for rules, borders and focus rings (non-text, 3:1). */
+  --accent-ink:  #0C6F80;  /* teal text on light: 5.83:1 paper, 5.27:1 mist */
+  --accent-pale: #B7ECF3;  /* teal text on dark: 10.6:1 blue-deep, 5.36:1 blue */
+  --steel-lt:    #A9BDD1;  /* body copy on dark: 7.08:1 blue-deep, 8.65:1 ink */
+
+  /* The brand mark's own blue. DECORATIVE ONLY — 3.16:1 on white, so it must
+     never carry button or link text. Kept as a token so nobody re-derives it. */
+  --brand-blue: #299AD2;
+
+  /* Type */
+  --font-display: "Archivo", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-body:    "Source Sans 3", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono:    "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+  /* Rhythm */
+  --container:  1200px;
+  --gutter:     clamp(1.25rem, 4vw, 2.5rem);
+  /* Three steps, and nothing on the page is allowed a square corner.
+     --radius-sm  small chrome that sits inside something else: thumbnails,
+                  sub-links, tags. Bigger and it fights its container's curve.
+     --radius     the card step — every card, panel, well, field and box.
+     --radius-lg  floating surfaces: the mega panel, the drawer, the full-bleed
+                  product tiles. One step above a card, so a surface that hovers
+                  over the page reads as lifted off it.
+     A card and its own media share --radius via the parent's overflow: hidden;
+     do not re-declare a radius on the child or the two will disagree. */
+  --radius-sm:  8px;
+  --radius:     12px;
+  --radius-lg:  16px;
+  /* Buttons only. Must equal the `radius` prop given to SpecularEdge in
+     Button.tsx — the shader traces this exact rounded-rect. */
+  --btn-radius: 18px;
+  --ease:       cubic-bezier(0.4, 0, 0.2, 1);
+  --dur:        170ms;
+
+  /* Shadow scale, tinted with --ink rather than pure black so shadows read as
+     depth on the blue-grey palette instead of grey haze. */
+  --shadow-sm: 0 1px 2px rgba(11, 31, 51, 0.06), 0 1px 3px rgba(11, 31, 51, 0.05);
+  --shadow-md: 0 4px 14px -3px rgba(11, 31, 51, 0.12), 0 2px 6px -2px rgba(11, 31, 51, 0.07);
+  --shadow-lg: 0 18px 40px -12px rgba(11, 31, 51, 0.22), 0 6px 14px -6px rgba(11, 31, 51, 0.1);
+  --shadow-xl: 0 30px 64px -18px rgba(11, 31, 51, 0.3), 0 10px 22px -8px rgba(11, 31, 51, 0.14);
+  /* On dark sections a light-tinted shadow is invisible; go deeper instead. */
+  --shadow-dark: 0 14px 30px -14px rgba(0, 0, 0, 0.55);
+
+  /* Header clearance. The header is a fixed overlay, so this is what page
+     content has to clear. Measured against the *resting* state, which is the
+     tallest: the brand sits in its white chip there.
+
+       chip mark 46px x 235/256 aspect = 42.2px
+       + chip padding 7px x 2          = 56.2px
+       + header padding 0.875rem x 2   = 84.2px  ->  5.5rem with a little slack
+
+     It was 4.75rem, which was already ~3px short of the real header, and the
+     768px override below it was ~7px short — content was creeping under the
+     bar on mobile. The chip does not change size at any breakpoint, so there
+     is nothing left for that override to do and it is gone.
+
+     Used for hero padding, inner-hero padding, in-page anchor scroll-margin
+     and the mega panel's max-height. It was 6.5rem when a top bar sat above
+     the header. */
+  --header-h: 5.5rem;
+}

@@ -1,0 +1,14 @@
+/* Order matters: tokens, then base, then components, then pages, then the
+   breakpoint overrides last so they win without needing extra specificity. */
+@import './tokens.css';
+@import './base.css';
+@import './components.css';
+@import './pages.css';
+/* After the component and page sheets so its press states and load states can
+   override their resting transforms, but before the breakpoint overrides so a
+   media query still has the last word on layout. */
+@import './motion.css';
+@import './responsive.css';
+/* Last of all: every rule is scoped to [dir="rtl"] / [lang="ar"], so it must
+   be able to override the physical values and breakpoint rules above. */
+@import './rtl.css';

@@ -1,0 +1,359 @@
+/* ==========================================================================
+   MOTION — the CSS half of the animation system.
+
+   Split from the component sheets on purpose: everything here is presentation
+   that only exists to support movement (mask boxes, load states, press and
+   hover polish). Keeping it in one file means the whole motion layer can be
+   read, audited or disabled in one place.
+
+   Two rules hold throughout:
+
+   1. Only `transform`, `opacity` and (sparingly) `filter` are animated. Those
+      are composited on the GPU and skip layout and paint. Nothing here
+      animates width, height, top/left, margin or padding, so no animation on
+      the site can cause a layout shift or a reflow.
+
+   2. Every effect degrades to nothing under prefers-reduced-motion — see the
+      block at the foot of this file, which is the single switch for the CSS
+      side. The JS side is handled per-component with useReducedMotion.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   SPLIT TEXT
+   The mask that turns SplitText's rising words into a wipe rather than a slide.
+   -------------------------------------------------------------------------- */
+
+/* The clipping box. inline-block so it can hold a transformed child and still
+   sit in the line box like a word; `vertical-align: bottom` keeps the baseline
+   where the browser would have put it, which is what stops a split heading
+   sitting a pixel or two off from a plain one.
+
+   overflow: hidden is what does the masking — the inner span starts fully
+   below this box and is invisible until it rises into it. */
+.split__word {
+	display: inline-block;
+	overflow: hidden;
+	vertical-align: bottom;
+	/* Descenders (g, y, p) are drawn below the baseline and would be clipped by
+	   the box. The padding gives them room and the equal negative margin takes
+	   the space back out of the layout, so the heading's metrics are unchanged. */
+	padding-bottom: 0.12em;
+	margin-bottom: -0.12em;
+}
+
+.split__inner {
+	display: inline-block;
+	/* Promoted for the life of the animation. A heading is a handful of nodes,
+	   so the layer cost is trivial next to re-rasterising text every frame. */
+	will-change: transform;
+}
+
+/* --------------------------------------------------------------------------
+   IMAGE LOAD REVEAL
+   Images fade and settle as they decode instead of snapping in. The <img> is
+   opacity 0 until its onLoad handler adds .is-loaded — see useImageReveal.
+   -------------------------------------------------------------------------- */
+
+/* OPACITY ONLY — deliberately, and this is load-bearing.
+ *
+ * The obvious version of this effect also scales the image from 1.04 to 1. It
+ * cannot: almost every image on the site already has a hover zoom
+ * (.card__img, .cat__img, .pcard__img, .tile__img, .cap__img, .mega__img all
+ * scale on hover), those rules are written as `.card:hover .card__img` at
+ * specificity (0,2,0), and `.img-reveal.is-loaded` is *also* (0,2,0) — with
+ * this file imported after the component sheets, the reveal would win and
+ * silently delete the hover zoom sitewide.
+ *
+ * Specificity games would fix the cascade and still leave both effects writing
+ * the same property, so the first hover during a load would fight the reveal.
+ * Splitting the properties is the fix: the reveal owns opacity, hover owns
+ * transform, and neither can clobber the other. The zoom the brief asks for on
+ * load is already there on hover, which is where it does more work anyway.
+ *
+ * The tinted well behind the image (.cat__media, .card__media et al) stays
+ * visible through the fade, so a frame is never a white hole mid-load. */
+.img-reveal {
+	opacity: 0;
+	transition: opacity 700ms var(--ease);
+}
+.img-reveal.is-loaded {
+	opacity: 1;
+}
+
+/* An image restored from cache fires load before React attaches the handler,
+   which would strand it at opacity 0. The hook checks img.complete for that,
+   but this is the belt-and-braces: if JS never runs at all, every image is
+   fully visible rather than invisible. */
+.no-js .img-reveal,
+.img-reveal--eager {
+	opacity: 1;
+	transition: none;
+}
+
+/* --------------------------------------------------------------------------
+   SKELETON / SHIMMER
+   For surfaces that occupy space before their content resolves. The site is
+   statically routed so there is no data fetch to wait on — these back the
+   image wells, which are the one thing that genuinely arrives late.
+   -------------------------------------------------------------------------- */
+
+.skeleton {
+	position: relative;
+	overflow: hidden;
+	background: var(--mist);
+}
+.skeleton::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	transform: translateX(-100%);
+	background: linear-gradient(
+		90deg,
+		transparent 0%,
+		rgba(255, 255, 255, 0.55) 50%,
+		transparent 100%
+	);
+	animation: shimmer 1.6s var(--ease) infinite;
+}
+@keyframes shimmer {
+	to {
+		transform: translateX(100%);
+	}
+}
+
+/* --------------------------------------------------------------------------
+   SCROLL PROGRESS
+   -------------------------------------------------------------------------- */
+
+/* 2px of accent teal — the same weight as the rule under every section eyebrow,
+   so it reads as part of the existing motif rather than a widget bolted on.
+
+   z-index sits above the header (60) because the header is translucent when
+   scrolled and the bar would otherwise be blurred by its backdrop-filter.
+   transform-origin is logical, so the bar fills from the right in Arabic. */
+.scroll-progress {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	z-index: 90;
+	height: 2px;
+	background: var(--accent);
+	transform-origin: 0 50%;
+	/* Framer writes scaleX every frame; declaring the axis keeps the element on
+	   its own layer instead of being promoted and demoted as scrolling starts
+	   and stops. */
+	will-change: transform;
+	pointer-events: none;
+}
+[dir="rtl"] .scroll-progress {
+	transform-origin: 100% 50%;
+}
+
+/* --------------------------------------------------------------------------
+   PRESS
+   The counterpart to the hover lift that cards and buttons already carry.
+   Without it an element rises on hover and then does nothing when clicked,
+   which is the moment an interface feels unresponsive on touch — where there
+   is no hover state at all and this is the *only* feedback.
+   -------------------------------------------------------------------------- */
+
+.btn:active,
+.chip:active,
+.logo-cell:active {
+	transform: translateY(1px) scale(0.985);
+}
+/* Cards already translate on hover, so their press has to compose with it
+   rather than replace it, or the card drops to the page on click. */
+.card:active,
+.pcard:active,
+.cat:active,
+a.cap:active {
+	transform: translateY(-2px) scale(0.995);
+}
+
+/* --------------------------------------------------------------------------
+   LINK UNDERLINES
+   The footer sitemap and the legal bar used `text-decoration: underline` on
+   hover, which appears instantly and full-width. Same resting appearance, same
+   colour, same final underline — it is drawn now instead of switched on.
+   -------------------------------------------------------------------------- */
+
+/* `text-decoration` itself is not animatable, but `text-decoration-color` is.
+   So the underline is always present and simply transparent at rest, then fades
+   to the text colour on hover.
+ *
+ * The obvious alternative — a scaleX pseudo-element drawn from the leading edge
+ * — was tried and rejected for two concrete reasons:
+ *
+ *   1. These selectors already carry `text-decoration: underline` on :hover in
+ *      components.css. A pseudo-element would have added a second rule under
+ *      the first, so every footer link would show a double underline on hover.
+ *   2. .footer__link is inline-block with `padding-block: 0.35rem` (0.6rem
+ *      under pointer: coarse). An absolutely positioned rule resolves against
+ *      the padding box, so it would have sat a third of a line *below* the
+ *      text, and at a different distance on touch devices.
+ *
+ * Fading the real underline has neither problem: it tracks the text exactly,
+ * survives wrapping onto two lines, needs no padding arithmetic, and costs no
+ * extra element. Resting appearance is unchanged — no underline visible. */
+.footer__link,
+.legal-bar__link,
+.crumbs a {
+	text-decoration: underline;
+	text-decoration-color: transparent;
+	transition:
+		color var(--dur) var(--ease),
+		text-decoration-color var(--dur) var(--ease);
+}
+/* The existing :hover rules use the `text-decoration` shorthand, which resets
+   the colour to currentColor — so they already produce the end state and the
+   transition above animates them into it. These are here so keyboard focus
+   gets the same treatment as the mouse, which those rules do not cover. */
+.footer__link:focus-visible,
+.legal-bar__link:focus-visible,
+.crumbs a:focus-visible {
+	text-decoration-color: currentColor;
+}
+
+/* --------------------------------------------------------------------------
+   FORM MICRO-INTERACTIONS
+   The field already gets a teal ring on focus (pages.css). These add the
+   label's response, so the whole row acknowledges focus rather than just the
+   box.
+   -------------------------------------------------------------------------- */
+
+.field__label {
+	transition:
+		color var(--dur) var(--ease),
+		transform var(--dur) var(--ease);
+	/* Logical origin so the label scales toward the reading edge, not away. */
+	transform-origin: 0 50%;
+}
+[dir="rtl"] .field__label {
+	transform-origin: 100% 50%;
+}
+/* :focus-within on the wrapper, so the label reacts to focus landing anywhere
+   in the row — including via the label's own click-through. */
+.field:focus-within .field__label {
+	color: var(--blue);
+	/* Very small. A label that visibly jumps on focus is a distraction while
+	   typing; this is just enough to register in peripheral vision. */
+	transform: translateY(-1px);
+}
+
+/* The invalid state already turns the border red. A single short shake makes it
+   arrive rather than just appear — the one place on the site where motion is
+   carrying information instead of polish. Deliberately 1 cycle and 240ms: long
+   enough to notice, too short to be in the way of correcting the field. */
+.field__input:user-invalid,
+.field__textarea:user-invalid {
+	animation: field-nudge 240ms var(--ease) 1;
+}
+@keyframes field-nudge {
+	0%,
+	100% {
+		transform: translateX(0);
+	}
+	30% {
+		transform: translateX(-3px);
+	}
+	65% {
+		transform: translateX(2px);
+	}
+}
+
+/* --------------------------------------------------------------------------
+   ICONS
+   -------------------------------------------------------------------------- */
+
+/* The carousel arrows and the drawer close button get their glyph moving, not
+   just their border colour. Transform on the icon, so the 44px hit target and
+   the button box never move. */
+.carousel__arrow .carousel__icon,
+.drawer__close svg {
+	transition: transform var(--dur) var(--ease);
+}
+.carousel__arrow--next:hover .carousel__icon {
+	transform: translateX(2px);
+}
+.carousel__arrow--prev:hover .carousel__icon {
+	/* Composes with the scaleX(-1) that mirrors this glyph — dropping the flip
+	   here would point the arrow the wrong way on hover. */
+	transform: scaleX(-1) translateX(2px);
+}
+.drawer__close:hover svg {
+	transform: rotate(90deg);
+}
+
+/* --------------------------------------------------------------------------
+   REDUCED MOTION
+   One switch for the whole CSS motion layer.
+
+   Deliberately not `animation: none` on everything — that would strand the
+   image reveal at opacity 0 and the split words below their mask, hiding real
+   content. Anything whose end state is "visible" is forced *to* that end state
+   here; only genuinely decorative loops are stopped.
+   -------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+	.img-reveal,
+	.img-reveal.is-loaded {
+		opacity: 1;
+		transition: none;
+	}
+
+	.split__inner {
+		transform: none;
+		will-change: auto;
+	}
+
+	/* Decorative and infinite — the one category that is simply switched off
+	   rather than completed. */
+	.skeleton::after {
+		animation: none;
+	}
+
+	.btn:active,
+	.chip:active,
+	.logo-cell:active,
+	.card:active,
+	.pcard:active,
+	.cat:active,
+	a.cap:active {
+		transform: none;
+	}
+
+	/* The underline still appears on hover — it is the affordance, not
+	   decoration. Only the fade into it is dropped. */
+	.footer__link,
+	.legal-bar__link,
+	.crumbs a {
+		transition: none;
+	}
+
+	.field__label,
+	.field:focus-within .field__label {
+		transform: none;
+		transition: none;
+	}
+	/* The colour change stays: that is the information. Only the shake goes. */
+	.field__input:user-invalid,
+	.field__textarea:user-invalid {
+		animation: none;
+	}
+
+	.carousel__arrow .carousel__icon,
+	.drawer__close svg {
+		transition: none;
+	}
+	.carousel__arrow--next:hover .carousel__icon,
+	.drawer__close:hover svg {
+		transform: none;
+	}
+	/* Except this one — `none` would unflip the mirrored glyph and point the
+	   previous arrow forwards. */
+	.carousel__arrow--prev:hover .carousel__icon {
+		transform: scaleX(-1);
+	}
+}

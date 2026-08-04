@@ -1,0 +1,431 @@
+/* ==========================================================================
+   BASE — reset, typography, layout primitives, section heads, buttons.
+   ========================================================================== */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+/* In-page anchors only — route changes are scrolled by <ScrollManager>, which
+   jumps instantly so a navigation never animates the whole page past you. */
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--steel);
+  font-family: var(--font-body);
+  font-size: 1.0625rem;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  /* Reveals that enter from the left or right start the element translated
+     ~28px outside its box. Where the gutter is narrower than that — clamp()
+     bottoms out at 20px on a phone — the overflow would give the whole page a
+     horizontal scrollbar for the duration of the animation.
+
+     `clip`, not `hidden`. `hidden` makes this a scroll container, which breaks
+     position: sticky for any descendant and lets the page be scrolled
+     sideways programmatically; `clip` just refuses to show the overflow. It
+     also does not create a containing block, so the fixed header is unaffected.
+     Safari below 16 ignores it and falls back to visible, which is the current
+     behaviour, so nothing regresses there. */
+  overflow-x: clip;
+}
+
+/* Locks the page while the mobile drawer is open. */
+body.is-locked { overflow: hidden; }
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  color: var(--ink);
+  margin: 0;
+  font-weight: 700;
+}
+
+p { margin: 0; }
+ul, ol { margin: 0; padding: 0; list-style: none; }
+img { display: block; max-width: 100%; height: auto; }
+a { color: var(--blue); }
+address { font-style: normal; }
+hr { border: 0; margin: 0; }
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+/* Focus — never removed. Teal at 2px with offset. The radius is a floor for
+   elements that have none of their own; anything already rounded keeps its
+   own value, so the ring follows the shape it is drawn around. */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
+}
+
+.skip-link {
+  position: absolute;
+  inset-inline-start: var(--gutter);
+  top: 0;
+  transform: translateY(-150%);
+  z-index: 100;
+  background: var(--ink);
+  color: var(--paper);
+  padding: 0.75rem 1.25rem;
+  border-radius: 0 0 var(--radius) var(--radius);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+.skip-link:focus-visible { transform: translateY(0); }
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* --------------------------------------------------------------------------
+   LAYOUT PRIMITIVES
+   -------------------------------------------------------------------------- */
+
+.container {
+  width: 100%;
+  max-width: var(--container);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+/* Notch / rounded-corner clearance. env() is 0 wherever there is no inset, so
+   max() collapses back to --gutter and nothing changes off-device. Physical
+   left/right is correct here: the padding is symmetric, so there is nothing
+   for a logical property to flip. */
+@supports (padding: env(safe-area-inset-left)) {
+  .container {
+    padding-left: max(var(--gutter), env(safe-area-inset-left));
+    padding-right: max(var(--gutter), env(safe-area-inset-right));
+  }
+}
+.container--narrow { max-width: 46rem; }
+
+/* ONE padding rule for every section; modifiers only change background.
+   No element-level section padding anywhere else that could fight this. */
+.section {
+  padding-block: clamp(3.5rem, 7vw, 6.5rem);
+  scroll-margin-top: var(--header-h);
+}
+.section--tight { padding-block: clamp(2.5rem, 5vw, 4.5rem); }
+.section--mist  { background: var(--mist); }
+.section--deep  { background: var(--blue-deep); }
+.section--ink   { background: var(--ink); }
+.section--blue  { background: var(--blue); }
+
+/* Reversed treatment, shared by every dark section. */
+.section--deep .eyebrow,
+.section--ink .eyebrow,
+.section--blue .eyebrow { color: var(--accent-pale); }
+
+.section--deep .rule,
+.section--ink .rule,
+.section--blue .rule { background: var(--accent-pale); }
+
+.section--deep .section-head__title,
+.section--ink .section-head__title,
+.section--blue .section-head__title { color: var(--paper); }
+
+.section--deep :focus-visible,
+.section--ink :focus-visible,
+.section--blue :focus-visible { outline-color: var(--accent-pale); }
+
+.grid { display: grid; gap: 1.25rem; }
+.grid--4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.grid--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.grid--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(1.5rem, 3vw, 3rem); }
+
+/* --------------------------------------------------------------------------
+   SECTION HEAD
+   A mono label over a 2px teal rule opens every section. The numbered
+   reference codes that used to sit beside it were removed at the client's
+   request — do not reintroduce them anywhere.
+   -------------------------------------------------------------------------- */
+
+.eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 0.72rem;
+  line-height: 1.4;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent-ink);
+}
+/* The "──" prefix, drawn rather than typed so screen readers don't announce
+   box-drawing characters. */
+.eyebrow::before {
+  content: "";
+  flex: 0 0 auto;
+  width: 1.75rem;
+  height: 2px;
+  background: currentColor;
+}
+
+.rule {
+  height: 2px;
+  background: var(--accent);
+  width: 100%;
+  margin-top: 0.875rem;
+  transform-origin: left center;
+}
+
+.section-head { margin-bottom: clamp(2rem, 4vw, 3rem); }
+.section-head--flush { margin-bottom: 0; }
+.section-head--center { text-align: center; }
+.section-head--center .eyebrow { justify-content: center; }
+.section-head--center .section-head__title { margin-inline: auto; }
+.section-head--center .section-head__intro { margin-inline: auto; }
+/* A full-bleed rule under centred copy reads as a divider rather than as part
+   of the heading, so it shortens and draws out from the middle. */
+.section-head--center .rule {
+  width: 5rem;
+  margin-inline: auto;
+  transform-origin: center;
+}
+
+.section-head__title {
+  font-size: clamp(1.9rem, 3.6vw, 3rem);
+  line-height: 1.1;
+  letter-spacing: -0.018em;
+  margin-top: 1.25rem;
+  max-width: 22ch;
+}
+
+.section-head__intro {
+  margin-top: 1.125rem;
+  max-width: 62ch;
+  font-size: 1.0625rem;
+}
+.section--deep .section-head__intro,
+.section--ink .section-head__intro,
+.section--blue .section-head__intro { color: var(--steel-lt); }
+
+/* --------------------------------------------------------------------------
+   BUTTONS
+   -------------------------------------------------------------------------- */
+
+/* Buttons carry the specular edge highlight (components/SpecularEdge.tsx).
+   `position: relative` is the containing block for its canvas; the pill radius
+   is what the shader's rounded-rect SDF is told to trace, so --btn-radius and
+   the `radius` prop passed in Button.tsx must stay in step. */
+.btn {
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 44px;
+  padding: 0.7rem 1.5rem;
+  border: 1px solid transparent;
+  border-radius: var(--btn-radius);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.9375rem;
+  line-height: 1.2;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color var(--dur) var(--ease),
+              border-color var(--dur) var(--ease),
+              color var(--dur) var(--ease),
+              box-shadow var(--dur) var(--ease);
+}
+
+/* The canvas is inset past the button's own box so the highlight can bloom
+   outside the border rather than being clipped by it. PAD in SpecularEdge is
+   20px and this must match, or the shine lands off-register. */
+.btn__fx {
+  position: absolute;
+  inset: -20px;
+  z-index: -1;
+  pointer-events: none;
+}
+.btn__fx canvas { display: block; width: 100%; height: 100%; }
+
+/* Above the canvas, and the flex row that holds label + arrow. */
+.btn__label {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn--primary {
+  background: var(--blue);
+  color: var(--paper);
+  box-shadow: var(--shadow-sm);
+}
+.btn--primary:hover { background: var(--blue-deep); box-shadow: var(--shadow-md); }
+
+.btn--light {
+  background: var(--paper);
+  color: var(--blue);
+  box-shadow: var(--shadow-md);
+}
+.btn--light:hover { background: var(--mist); color: var(--blue-deep); box-shadow: var(--shadow-lg); }
+
+.btn--outline {
+  background: transparent;
+  border-color: var(--line);
+  color: var(--ink);
+}
+.btn--outline:hover { border-color: var(--accent); color: var(--accent-ink); }
+
+/* Over a dark photograph the brand blue has almost no separation from the
+   scrim, so the primary action goes solid white and the secondary is outlined. */
+.btn--outline-light {
+  background: transparent;
+  border-color: rgba(255, 255, 255, 0.55);
+  color: var(--paper);
+}
+.btn--outline-light:hover {
+  border-color: var(--paper);
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.btn--sm { min-height: 40px; padding: 0.5rem 1.1rem; font-size: 0.875rem; }
+.btn--lg { min-height: 54px; padding: 0.9rem 2.25rem; font-size: 1rem; }
+.btn--block { width: 100%; }
+
+/* The arrow on "read more" style links; nudges on hover. */
+.btn__arrow { transition: transform var(--dur) var(--ease); }
+@media (prefers-reduced-motion: no-preference) {
+  .btn:hover .btn__arrow { transform: translateX(3px); }
+}
+
+/* --------------------------------------------------------------------------
+   INLINE LINKS + LISTS reused across detail pages
+   -------------------------------------------------------------------------- */
+
+.link-arrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.9375rem;
+  color: var(--blue);
+  text-decoration: none;
+}
+.link-arrow:hover { color: var(--blue-deep); text-decoration: underline; }
+
+/* Spec list — a hairline-ruled list. */
+.spec-list { display: grid; }
+/* Padded in from the row edge and tinted on hover, so a long scope list reads
+   as a set of rows you can run your eye down rather than as ruled-off text. */
+.spec-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.875rem;
+  padding: 0.875rem 0.75rem;
+  border-top: 1px solid var(--line);
+  border-radius: var(--radius);
+  transition: background-color var(--dur) var(--ease);
+}
+.spec-list li:hover { background: var(--mist); }
+.spec-list li:last-child { border-bottom: 1px solid var(--line); }
+.spec-list--onDark li:hover { background: rgba(255, 255, 255, 0.05); }
+
+/* Multi-column variant for the full-width scope block. Every row is underlined
+   rather than overlined: with items flowing across columns, a border-top on
+   each plus a border-bottom on only the last item leaves the other columns
+   ending open. */
+.spec-list--cols {
+  /* min(19rem, 100%) rather than a bare 19rem: auto-fill will not shrink a
+     track below its stated minimum, so 19rem overflows any container narrower
+     than 304px. Identical above 19rem, which is every desktop width. */
+  grid-template-columns: repeat(auto-fill, minmax(min(19rem, 100%), 1fr));
+  column-gap: clamp(1.5rem, 4vw, 3.5rem);
+}
+.spec-list--cols li {
+  border-top: 0;
+  border-bottom: 1px solid var(--line);
+}
+.spec-list__n {
+  flex: 0 0 auto;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  line-height: 1.9;
+  letter-spacing: 0.12em;
+  color: var(--accent-ink);
+}
+.spec-list--onDark li { border-color: rgba(169, 189, 209, 0.25); }
+.spec-list--onDark li:last-child { border-bottom-color: rgba(169, 189, 209, 0.25); }
+.spec-list--onDark .spec-list__n { color: var(--accent-pale); }
+.spec-list--onDark { color: var(--steel-lt); }
+
+/* A visible client-review flag. Deliberately loud — it is meant to be seen and
+   removed, not to survive to production. */
+.todo {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+  padding: 0.875rem 1rem;
+  border: 1px dashed var(--accent);
+  border-radius: var(--radius);
+  background: rgba(23, 162, 184, 0.06);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  line-height: 1.7;
+  letter-spacing: 0.02em;
+  color: var(--accent-ink);
+}
+.todo::before {
+  content: "TODO";
+  flex: 0 0 auto;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+}
+.todo--onDark {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(183, 236, 243, 0.5);
+  color: var(--accent-pale);
+}
+
+/* Disabled / in-flight. Reduced contrast plus a not-allowed cursor, and the
+   specular canvas is hidden so a dead button does not still glow. */
+.btn.is-disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+.btn.is-disabled .btn__fx { display: none; }
+
+/* Occupies the arrow's slot rather than sitting beside it, so the button
+   keeps its width while submitting. */
+.btn__spinner {
+  width: 14px;
+  height: 14px;
+  flex: 0 0 auto;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  border-radius: 50%;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .btn__spinner { animation: btn-spin 0.7s linear infinite; }
+}
+@keyframes btn-spin { to { transform: rotate(360deg); } }

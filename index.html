@@ -1,0 +1,98 @@
+<!-- @format -->
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1" />
+
+		<!-- Per-page <title>/<meta> are injected by react-helmet-async; these are the
+     pre-hydration defaults a crawler or a JS-off visitor sees. -->
+		<title>
+			BMGT Enterprise — industrial materials, supplied | Dubai, U.A.E.
+		</title>
+		<meta
+			name="description"
+			content="BMGT Enterprise is a single-source supplier of industrial materials to shipbuilding, oil &amp; gas, construction and general engineering. Based in Dubai, U.A.E. Supplying worldwide." />
+
+		<link
+			rel="icon"
+			href="/favicon.ico"
+			sizes="any" />
+		<link
+			rel="icon"
+			type="image/png"
+			sizes="32x32"
+			href="/images/favicon-32.png" />
+		<link
+			rel="icon"
+			type="image/png"
+			sizes="16x16"
+			href="/images/favicon-16.png" />
+		<link
+			rel="apple-touch-icon"
+			href="/images/apple-touch-icon.png" />
+		<meta
+			name="theme-color"
+			content="#0B1F33" />
+
+		<link
+			rel="preconnect"
+			href="https://fonts.googleapis.com" />
+		<link
+			rel="preconnect"
+			href="https://fonts.gstatic.com"
+			crossorigin />
+		<!-- IBM Plex Sans Arabic is appended to the same request; it is applied only
+     under [lang="ar"] (see styles/rtl.css), so English pays nothing but the
+     one extra family in this URL. -->
+
+		<!--
+  Designed & Developed by Faisal Nadaf
+  Email: faisalfnadaf@gmail.com
+-->
+		<link
+			href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700&family=IBM+Plex+Mono:wght@500&family=Source+Sans+3:wght@400;600&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+			rel="stylesheet" />
+
+		<link
+			rel="preload"
+			as="image"
+			href="/images/hero-port.jpg"
+			fetchpriority="high" />
+
+		<!-- Sets lang/dir before the first paint. React and Helmet take over on
+     mount, but without this the first frame renders LTR with the English
+     font and the whole page visibly flips when Arabic is the stored choice.
+     Kept inline and dependency-free so it runs ahead of the bundle. -->
+		<script>
+			(function () {
+				try {
+					var stored = localStorage.getItem("BMGT.locale");
+					var fromPath = (location.pathname.match(/^\/(en|ar)(?=\/|$)/) ||
+						[])[1];
+					var lang = fromPath || stored;
+					if (lang !== "en" && lang !== "ar") {
+						lang =
+							(navigator.language || "en").toLowerCase().indexOf("ar") === 0 ?
+								"ar"
+							:	"en";
+					}
+					var el = document.documentElement;
+					el.lang = lang;
+					el.dir = lang === "ar" ? "rtl" : "ltr";
+				} catch (e) {
+					/* Storage blocked — the English default in the markup already applies. */
+				}
+			})();
+		</script>
+	</head>
+	<body>
+		<div id="root"></div>
+		<script
+			type="module"
+			src="/src/main.tsx"></script>
+	</body>
+</html>

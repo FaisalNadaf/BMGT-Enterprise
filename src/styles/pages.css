@@ -1,0 +1,975 @@
+/* ==========================================================================
+   PAGES — home hero, about, capabilities, inner-page hero, detail layouts,
+   contact form, legal, 404.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   HOME HERO
+   Full-bleed photograph with the headline over it. The scrim is weighted to
+   the left, where the copy sits and where the sunset in the photo is
+   brightest — alphas tuned against the actual image, not guessed.
+   -------------------------------------------------------------------------- */
+
+.hero {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  place-items: center;
+  /* Full viewport. svh rather than vh so mobile browsers do not cut the
+     bottom off behind a collapsing address bar. */
+  min-height: 100svh;
+  background: var(--blue-deep);
+  overflow: hidden;
+  text-align: center;
+}
+/* Layering is positive and explicit — footage 0, scrim 1, copy 2 — rather than
+   parking the background on a negative z-index with the scrim at -1 behind
+   everything else. The negative scheme was fine behind an <img>; behind a
+   <video> it gave a compositor that was already mis-ordering these layers one
+   more way to get it wrong. .page-hero below is on the same scheme.
+
+   The z-index is also what makes this element a stacking context, which is what
+   scopes .hero__scrim's z-index to the inside of this box. */
+.hero__bgwrap { position: absolute; inset: 0; z-index: 0; }
+/* Carried by both the <video> and the reduced-motion <img> that stands in for
+   it, so the framing is identical whichever one renders. `display: block` is
+   not inherited from the img reset — a <video> is inline by default and would
+   otherwise leave a baseline sliver of navy along the bottom edge. */
+.hero__bg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 62% 50%;
+  /* Pinned to its own compositing layer for the life of the page. Nothing
+     animates it any more (see Home.tsx), so the layer is rastered once and
+     never rebuilt — a <video> whose layer is repeatedly promoted and demoted is
+     what produced the flicker on scroll. translateZ(0) rather than
+     will-change: transform: this is a permanent state, not a hint that an
+     animation is imminent, and browsers are free to drop the latter. */
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+/* The copy is centred now, so the scrim is too: a vignette that darkens
+   towards the edges and keeps the middle of the frame readable, plus a
+   vertical pass that weights the top (behind the transparent header) and the
+   foot (behind the scroll cue).
+
+   This was .hero::after. It is a real element inside .hero__bgwrap now, sitting
+   directly on top of the video as its sibling — see the note in Home.tsx for
+   why the pseudo-element could not hold the overlay down. Because __bgwrap is
+   positioned with a z-index it opens its own stacking context, so this z-index
+   is scoped to that box: guaranteed above the footage, and unable to climb over
+   .hero__body (z-index 2) no matter what value it carries. */
+.hero__scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  /* Nothing in it is interactive and it covers the whole section, so it would
+     otherwise swallow the CTA clicks beneath it. */
+  pointer-events: none;
+  background:
+    radial-gradient(115% 85% at 50% 42%,
+      rgba(7, 47, 82, 0.42) 0%,
+      rgba(7, 47, 82, 0.68) 48%,
+      rgba(11, 31, 51, 0.88) 100%),
+    linear-gradient(180deg,
+      rgba(11, 31, 51, 0.62) 0%,
+      rgba(11, 31, 51, 0.12) 26%,
+      rgba(11, 31, 51, 0.20) 62%,
+      rgba(11, 31, 51, 0.72) 100%);
+}
+
+.hero__body {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  align-items: center;
+  width: 100%;
+  /* Clears the fixed header at the top and the scroll cue at the foot. */
+  padding-block: calc(var(--header-h) + 2rem) clamp(4.5rem, 9vw, 7rem);
+}
+.hero__copy { max-width: 54rem; margin-inline: auto; }
+/* The eyebrow is a flex row with a drawn rule before it — centring the text
+   alone would leave the rule hanging off the left. */
+.hero .eyebrow { color: var(--accent-pale); justify-content: center; }
+.hero__title {
+  color: var(--paper);
+  font-size: clamp(2.6rem, 7vw, 5.25rem);
+  line-height: 1.02;
+  letter-spacing: -0.028em;
+  margin-top: 1.5rem;
+  text-wrap: balance;
+}
+.hero__sub {
+  margin: 1.75rem auto 0;
+  color: rgba(255, 255, 255, 0.93);
+  font-size: clamp(1.0625rem, 1.5vw, 1.25rem);
+  max-width: 58ch;
+}
+.hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.875rem;
+  margin-top: 2.5rem;
+}
+
+/* ---- scroll cue ---- */
+
+/* A full-viewport hero hides the fact that anything follows it, so the foot
+   carries a cue. Decorative and not focusable — the "See what we supply"
+   button above it is the real affordance. */
+.hero__cue {
+  position: absolute;
+  z-index: 2;
+  left: 50%;
+  bottom: clamp(1.5rem, 3vw, 2.25rem);
+  translate: -50% 0;
+  display: grid;
+  justify-items: center;
+  gap: 0.55rem;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.6);
+  pointer-events: none;
+}
+.hero__cue-line {
+  width: 1px;
+  height: 2.75rem;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0));
+  transform-origin: top;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .hero__cue-line { animation: cue 2.4s var(--ease) infinite; }
+}
+@keyframes cue {
+  0%   { transform: scaleY(0.3); opacity: 0; }
+  40%  { transform: scaleY(1);   opacity: 1; }
+  100% { transform: scaleY(1);   opacity: 0; }
+}
+.hero :focus-visible { outline-color: var(--accent-pale); }
+
+/* Spec strip pinned to the foot of the hero — the catalogue-reference motif
+   doing real work: every figure is counted off the site's own content. */
+.hero__specbar {
+  background: rgba(7, 47, 82, 0.9);
+  border-top: 1px solid rgba(255, 255, 255, 0.16);
+}
+.hero__spec {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem clamp(1.75rem, 5vw, 4rem);
+  padding-block: 1.15rem;
+}
+.hero__spec li {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.88);
+}
+.hero__spec-n {
+  font-size: 1.15rem;
+  letter-spacing: 0.02em;
+  color: var(--accent-pale);
+  /* Tabular figures so a counter ticking 00→08 doesn't jitter the label. */
+  font-variant-numeric: tabular-nums;
+}
+
+/* --------------------------------------------------------------------------
+   INNER-PAGE HERO
+   Shorter than the home hero and always photographic, with the breadcrumb
+   carrying the wayfinding.
+   -------------------------------------------------------------------------- */
+
+.page-hero {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  align-items: end;
+  /* Trimmed from 19–27rem. The breadcrumb row that used to sit above the
+     eyebrow is gone, so the band no longer needs the height it was sized for.
+     The top padding still has to clear the fixed header, which overlays it. */
+  min-height: clamp(16rem, 34vw, 22rem);
+  padding-block: calc(var(--header-h) + clamp(2rem, 4vw, 3.25rem))
+    clamp(2rem, 4vw, 3.25rem);
+  background: var(--blue-deep);
+  overflow: hidden;
+}
+/* Same positive layering as .hero above. This one is still an <img>, so it was
+   not affected by the compositing problem — but the two heroes are read side by
+   side, and leaving one on a negative scheme is how the next photograph-to-
+   video swap reintroduces the bug. */
+.page-hero__bgwrap {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  /* The photograph is weighted to the right half and dissolves out through the
+     left, so the copy sits on flat --blue-deep rather than on picture. A scrim
+     alone could not do this: pile on enough alpha to make a headline safe over
+     any photograph and the whole band goes muddy. Masking removes the image
+     there instead, which leaves the right side clean enough to actually read as
+     a photograph.
+
+     The ramp is long and starts early — a short fade reads as a hard vertical
+     seam down the middle of the band. Ends at 74% so the last quarter is the
+     photograph at full strength.
+
+     Mirrored for RTL in rtl.css, and dropped below 1024px in responsive.css
+     where the copy spans the full width and has nowhere to sit. */
+  -webkit-mask-image: linear-gradient(to right,
+    transparent 8%,
+    rgba(0, 0, 0, 0.18) 26%,
+    rgba(0, 0, 0, 0.55) 44%,
+    rgba(0, 0, 0, 0.88) 60%,
+    #000 74%);
+  mask-image: linear-gradient(to right,
+    transparent 8%,
+    rgba(0, 0, 0, 0.18) 26%,
+    rgba(0, 0, 0, 0.55) 44%,
+    rgba(0, 0, 0, 0.88) 60%,
+    #000 74%);
+}
+.page-hero > .container { position: relative; z-index: 2; }
+.page-hero__bg { width: 100%; height: 100%; object-fit: cover; object-position: 50% 50%; }
+.page-hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  /* Lighter through the middle than it was. The mask on __bgwrap now carries
+     the left, so the old 0.82-at-38% pass was darkening a zone the mask had
+     already emptied — the two stacked into a muddy band across the join. What
+     is left here only has to blend the seam and hold tone on the right.
+     The vertical pass is unchanged in shape but a touch stronger at the top,
+     where the transparent header's white nav crosses the bright side. */
+  background:
+    linear-gradient(100deg,
+      rgba(7, 47, 82, 0.88) 0%,
+      rgba(7, 47, 82, 0.6) 34%,
+      rgba(7, 47, 82, 0.3) 62%,
+      rgba(7, 47, 82, 0.18) 100%),
+    linear-gradient(180deg, rgba(11, 31, 51, 0.5) 0%, rgba(11, 31, 51, 0.2) 45%, rgba(11, 31, 51, 0.5) 100%);
+}
+/* No photograph supplied for a given page — fall back to a flat navy band
+   rather than reusing an unrelated image. */
+.page-hero--plain { min-height: clamp(13rem, 26vw, 17rem); }
+.page-hero--plain::after {
+  background: linear-gradient(120deg, var(--blue-deep) 0%, var(--ink) 100%);
+}
+.page-hero .eyebrow { color: var(--accent-pale); }
+.page-hero__title {
+  margin-top: 1.25rem;
+  color: var(--paper);
+  font-size: clamp(2.1rem, 4.6vw, 3.5rem);
+  line-height: 1.06;
+  letter-spacing: -0.022em;
+  max-width: 20ch;
+}
+.page-hero__sub {
+  margin-top: 1.25rem;
+  color: rgba(255, 255, 255, 0.92);
+  font-size: clamp(1.0625rem, 1.4vw, 1.1875rem);
+  max-width: 52ch;
+}
+.page-hero :focus-visible { outline-color: var(--accent-pale); }
+
+/* Breadcrumb — mono, same voice as the section eyebrows. */
+.crumbs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem;
+  margin-bottom: 1.25rem;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.72);
+}
+.crumbs a { color: var(--accent-pale); text-decoration: none; }
+.crumbs a:hover { text-decoration: underline; }
+.crumbs__sep { color: rgba(255, 255, 255, 0.4); }
+
+/* --------------------------------------------------------------------------
+   ABOUT
+   -------------------------------------------------------------------------- */
+
+/* The copy column runs to roughly 600px while a 4:3 photograph in a column of
+   the same width is only ~430px tall, which left a block of dead space under
+   the image. The media column now stretches to the row height and the photo
+   crops to fill it, so the two columns end level. */
+.about {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+  gap: clamp(2rem, 5vw, 4rem);
+  align-items: stretch;
+}
+.about--reverse .about__media { order: 2; }
+.about__media { display: flex; }
+.about__img {
+  width: 100%;
+  height: 100%;
+  /* Floor for the case where the copy is short — without it the photo would
+     squash to whatever the text happens to need. */
+  min-height: clamp(20rem, 32vw, 30rem);
+  object-fit: cover;
+  border-radius: var(--radius);
+  background: var(--ink);
+  box-shadow: var(--shadow-xl);
+}
+.about__copy { display: grid; gap: 1.25rem; }
+.about__copy .section-head { margin-bottom: 0; }
+/* Lead paragraph carries more weight than the follow-on. */
+.about__lead {
+  font-size: clamp(1.125rem, 1.5vw, 1.3125rem);
+  line-height: 1.55;
+  color: var(--ink);
+}
+.about__actions { margin-top: 0.5rem; display: flex; flex-wrap: wrap; gap: 0.875rem; }
+/* Centred variant — for an action that closes a full-width block (a carousel,
+   a grid) rather than one that follows a left-aligned column of copy. */
+.about__actions--center { justify-content: center; margin-top: 1.5rem; }
+
+/* --------------------------------------------------------------------------
+   CAPABILITIES (dark, reversed)
+   -------------------------------------------------------------------------- */
+
+/* A 4:3 thumbnail beside a three-line paragraph left the image floating short
+   against a much taller column of text. It is a horizontal card instead: the
+   photograph is its own full-height column, so the two sides always end level
+   whatever the copy runs to. */
+.cap {
+  display: grid;
+  grid-template-columns: 12rem minmax(0, 1fr);
+  align-items: stretch;
+  overflow: hidden;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-dark);
+  text-decoration: none;
+  transition: background-color var(--dur) var(--ease),
+              border-color var(--dur) var(--ease),
+              transform var(--dur) var(--ease);
+}
+a.cap:hover {
+  background: rgba(255, 255, 255, 0.075);
+  border-color: var(--accent);
+}
+.cap__media {
+  display: block;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.06);
+}
+.cap__img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+/* Centred rather than top-aligned: against a full-height photograph, copy
+   pinned to the top reads as if it has slipped. */
+.cap__text {
+  display: grid;
+  gap: 0.875rem;
+  align-content: center;
+  padding: 1.5rem 1.6rem;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .cap { transition: background-color var(--dur) var(--ease),
+                     border-color var(--dur) var(--ease),
+                     transform var(--dur) var(--ease); }
+  a.cap:hover { transform: translateY(-4px); }
+  .cap__img { transition: transform 600ms var(--ease); }
+  a.cap:hover .cap__img { transform: scale(1.06); }
+}
+.cap__title {
+  color: var(--paper);
+  font-size: 1.25rem;
+  line-height: 1.3;
+  font-weight: 600;
+  transition: color var(--dur) var(--ease);
+}
+.cap__body { color: var(--steel-lt); }
+.cap__more {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--accent-pale);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+a.cap:hover .cap__title { color: var(--accent-pale); }
+@media (prefers-reduced-motion: no-preference) {
+  a.cap:hover .btn__arrow { transform: translateX(3px); }
+}
+
+/* --------------------------------------------------------------------------
+   DETAIL PAGE LAYOUT — intro copy beside a sticky spec panel
+   -------------------------------------------------------------------------- */
+
+.detail {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+  gap: clamp(2rem, 5vw, 4.5rem);
+  align-items: start;
+}
+.detail__copy { display: grid; gap: 1.25rem; }
+/* The copy column runs to ~760px, which is well past a comfortable measure at
+   this size. Capping the prose keeps the line length readable without
+   narrowing the column the scope list and headings sit in. */
+.detail__copy > p { max-width: 64ch; }
+.detail__lead {
+  font-size: clamp(1.125rem, 1.5vw, 1.25rem);
+  line-height: 1.55;
+  color: var(--ink);
+}
+/* .detail__subhead is gone — the scope heading it styled moved out of the
+   copy column and is now .scope__title below. */
+
+/* ---- sticky spec panel ---- */
+
+/* Was a padded tinted box holding a rounded, shadowed image — a card inside a
+   card, with the photo floating in the middle of it. The panel now clips the
+   photograph flush to its own top edge and the padding moves onto the body
+   below, so it reads as one object. */
+/* Not sticky any more. With the scope list moved out from beside it, the row
+   is only as tall as the intro copy — there is nothing left for a sticky panel
+   to travel against, and pinning it just left it hanging mid-section. */
+.detail__aside {
+  overflow: hidden;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-top: 2px solid var(--accent);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
+}
+.detail__figure { display: block; margin: 0; }
+.detail__img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  background: var(--ink);
+}
+
+.detail__panel {
+  display: grid;
+  gap: 1rem;
+  padding: clamp(1.15rem, 2vw, 1.5rem);
+}
+.detail__panel-lead {
+  font-size: 0.9688rem;
+  line-height: 1.55;
+  color: var(--steel);
+}
+
+/* ---- full-width scope list ---- */
+
+.scope { margin-top: clamp(2.5rem, 5vw, 4rem); }
+.scope__title {
+  margin-bottom: 1rem;
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+/* --------------------------------------------------------------------------
+   PRODUCT INDEX CARD — /products
+   -------------------------------------------------------------------------- */
+
+.pcard {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  text-decoration: none;
+  transition: border-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease),
+    transform var(--dur) var(--ease);
+}
+.pcard:hover { border-color: var(--accent); box-shadow: var(--shadow-md); }
+@media (prefers-reduced-motion: no-preference) {
+  .pcard:hover { transform: translateY(-4px); }
+  .pcard__img { transition: transform 400ms var(--ease); }
+  .pcard:hover .pcard__img { transform: scale(1.05); }
+}
+
+.pcard__media { display: block; overflow: hidden; background: var(--mist); }
+.pcard__img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+}
+
+.pcard__body {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  gap: 0.35rem;
+  padding: 1.1rem 1.15rem 1.25rem;
+}
+.pcard__title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.0625rem;
+  line-height: 1.25;
+  color: var(--ink);
+}
+.pcard__blurb {
+  flex: 1 1 auto;
+  font-size: 0.9063rem;
+  line-height: 1.5;
+  color: var(--steel);
+}
+.pcard__more {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.4rem;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--blue);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .pcard:hover .btn__arrow { transform: translateX(3px); }
+}
+
+/* --------------------------------------------------------------------------
+   CATALOGUE GRID — the imported line items on a product page.
+   -------------------------------------------------------------------------- */
+
+/* Photographic cards, recovered from the predecessor site. The old hairline
+   grid (1px gaps over a --line background) is gone — it worked for a text
+   index, but images need each card to be its own object with its own edge. */
+/* Three up, not auto-fill. auto-fill packed four narrow cards into the row and
+   the product shots came out too small to read — at three the image well is
+   roughly a third wider and each item is actually identifiable. */
+.cat-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(1.25rem, 2.5vw, 2rem);
+}
+.cat {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  background: var(--paper);
+  /* A --line hairline was too faint to separate a white card from a --mist
+     section once a white-background product shot ran to the card's own edge.
+     A denser border plus a real shadow gives every card a visible edge. */
+  border: 1px solid #CBD8E6;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
+  transition: border-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease),
+    transform var(--dur) var(--ease);
+}
+.cat:hover { border-color: var(--accent); box-shadow: var(--shadow-xl); }
+
+/* ---- media ---- */
+
+/* The image fills the well edge to edge. This was `contain` inside 1.35rem of
+   padding, on the reasoning that the catalogue is studio cut-outs which `cover`
+   would crop — but that is not what the files are. All 67 measure between 1.29
+   and 1.33 against a 4:3 well, so `cover` trims about 3% off the top and bottom
+   at worst and nothing at all on the widest of them. The padding, not the fit,
+   was what left every card ringed with dead space.
+
+   The seam between image and card body does not depend on that inset: the
+   border-bottom below draws it, so it survives the image running to the edge. */
+.cat__media {
+  position: relative;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  /* Still visible during the lazy-load window, before the file arrives. Top-lit
+     rather than flat so the well has some depth while it is empty. */
+  background: linear-gradient(180deg, #FAFCFE 0%, var(--mist-soft) 100%);
+  border-bottom: 1px solid var(--line);
+  aspect-ratio: 4 / 3;
+}
+.cat__img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Unused by the current data — every sub-product now has an `image`. This is
+   the safety net for any item added later without one: the render branches on
+   `image` being set, so a new entry degrades to this rather than to a broken
+   frame. See the note at the foot of data/products.ts.
+   Absolute so it fills the well edge to edge, the same way the real images do. */
+/* A grey monogram on a grey gradient read as a failed image request sitting in
+   the middle of the grid. It is a drawn plate instead: blueprint ruling under a
+   soft wash, the same drawing-sheet vocabulary as the CTA band and the mono
+   eyebrows, with the initial set in the display face as a watermark. Nothing
+   here announces "missing" — the tile simply looks intentional until the
+   client supplies the photograph. */
+.cat__fallback {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  /* 24px ruling so it stays fine at every tile size the grid steps through. */
+  background:
+    repeating-linear-gradient(to right,
+      rgba(14, 92, 158, 0.08) 0 1px, transparent 1px 24px),
+    repeating-linear-gradient(to bottom,
+      rgba(14, 92, 158, 0.08) 0 1px, transparent 1px 24px),
+    linear-gradient(150deg, var(--mist-soft) 0%, var(--mist) 100%);
+  /* Hairline inset so the plate has its own edge against the card body. */
+  box-shadow: inset 0 0 0 1px rgba(14, 92, 158, 0.07);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(2.75rem, 6vw, 3.75rem);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  /* Decorative letterform, not text anyone reads — the span is aria-hidden.
+     Kept light enough to sit within the ruling rather than on top of it. */
+  color: rgba(14, 92, 158, 0.3);
+}
+
+/* ---- body ---- */
+
+/* Padding grew with the card — at the old 1.05rem the copy sat tight against
+   the edge of a card half again as wide. */
+.cat__body {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  gap: 0.4rem;
+  padding: 1.25rem 1.4rem 1.4rem;
+}
+.cat__name {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.0938rem;
+  line-height: 1.3;
+  color: var(--ink);
+  transition: color var(--dur) var(--ease);
+}
+.cat:hover .cat__name { color: var(--accent-ink); }
+.cat__line {
+  font-size: 0.9063rem;
+  line-height: 1.5;
+  color: var(--steel);
+}
+
+/* Issuing body above a certification name on /legal — real content, not a
+   reference code, so it survives the removal of the numbered tags. */
+.cat__meta {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  color: var(--accent-ink);
+  margin: 0.95rem 1.05rem 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .cat:hover { transform: translateY(-4px); }
+  /* Back to the 1.06 every other cover-fitted image on the site uses. The 1.08
+     here was compensating for the image sitting inside padding, where the same
+     scale read as less movement; now that it fills the well, it does not need
+     the extra. */
+  .cat__img { transition: transform 500ms var(--ease); }
+  .cat:hover .cat__img { transform: scale(1.06); }
+}
+
+/* Related links — a row of compact chips at the foot of a detail page. */
+.chips { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 40px;
+  padding: 0.4rem 0.9rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 0.9063rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: border-color var(--dur) var(--ease), color var(--dur) var(--ease),
+              background-color var(--dur) var(--ease);
+}
+.chip:hover { border-color: var(--accent); color: var(--accent-ink); }
+
+/* --------------------------------------------------------------------------
+   CONTACT
+   -------------------------------------------------------------------------- */
+
+.contact {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  gap: clamp(2rem, 5vw, 4rem);
+  align-items: start;
+}
+/* The form sits on its own white card. Loose on the page background the
+   fields read as a stack of unrelated boxes; a card gives the enquiry a
+   boundary and lets it sit level with the contact panel beside it. */
+.form-card {
+  padding: clamp(1.5rem, 3vw, 2.25rem);
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-top: 2px solid var(--accent);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
+}
+.form-card .section-head { margin-bottom: 1.5rem; }
+
+.form { display: grid; gap: 1.1rem; }
+.form--spaced { margin-top: 0; }
+.form__row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.1rem; }
+.field { display: grid; gap: 0.45rem; }
+.field__label {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent-ink);
+}
+.field__req { color: var(--steel); }
+
+/* Filled at rest, white on focus. An outlined-only field on a white card is
+   almost invisible until you look for it; the tint gives each one a footprint
+   and makes the focused field obviously the active one. */
+.field__input,
+.field__textarea {
+  width: 100%;
+  padding: 0.8rem 0.95rem;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--ink);
+  background: var(--mist-soft);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  /* The caret inherits `color` by default — --ink at 1px on a pale field is
+     almost invisible on a high-density screen, so it gets the brand blue and
+     is stated rather than left to inherit. */
+  caret-color: var(--blue);
+  cursor: text;
+  transition: border-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease),
+    background-color var(--dur) var(--ease);
+}
+.field__input { min-height: 50px; }
+.field__textarea { min-height: 10rem; resize: vertical; }
+.field__input:hover,
+.field__textarea:hover { border-color: #A9BBCE; }
+
+/* A ring rather than a colour swap alone — a 1px border change is easy to
+   miss, and this reads at a glance without moving anything.
+
+   `outline: none` used to live here and was a mistake: at (0,2,0) it beat the
+   global `:focus-visible` rule at (0,1,0) and silently removed the site's
+   keyboard focus outline from every field. The ring is a box-shadow, so the
+   outline can simply stay. */
+.field__input:focus,
+.field__textarea:focus {
+  background: var(--paper);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(23, 162, 184, 0.18);
+}
+.field__input:focus-visible,
+.field__textarea:focus-visible { outline-offset: 2px; }
+
+/* :user-invalid, not :invalid — it only matches once the field has been
+   interacted with and left, so a required field is never flagged red before
+   anyone has typed in it. Most of these inputs carry no placeholder, so the
+   usual :not(:placeholder-shown) guard would not work here. */
+.field__input:user-invalid,
+.field__textarea:user-invalid {
+  border-color: #B4432F;
+  box-shadow: 0 0 0 3px rgba(180, 67, 47, 0.15);
+}
+/* The message placeholder carries real guidance, so it has to clear the 4.5:1
+   floor like any other body text — --steel does, a lighter grey would not. */
+.field__input::placeholder,
+.field__textarea::placeholder { color: var(--steel); opacity: 1; }
+
+.form__note { font-size: 0.875rem; color: var(--steel); }
+.form__status {
+  padding: 0.875rem 1rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--accent);
+  background: rgba(23, 162, 184, 0.08);
+  color: var(--accent-ink);
+  font-size: 0.9375rem;
+}
+
+/* Map placeholder — no embed, because a third-party iframe would be the only
+   tracker on the site. Swap for the real embed when the client agrees to it. */
+/* The embed is a fixed 600×450 by default; the wrapper overrides that with an
+   aspect ratio so it fills the column at any width. --mist behind it means the
+   frame is not a white hole while the iframe is still lazy-loading. */
+.map {
+  overflow: hidden;
+  aspect-ratio: 21 / 9;
+  background: var(--mist);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
+}
+.map__frame {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+.map__actions { margin-top: 1.25rem; display: flex; flex-wrap: wrap; gap: 0.875rem; }
+
+@media (max-width: 768px) {
+  /* 21:9 is a letterbox on a phone — too short to make out a street. */
+  .map { aspect-ratio: 4 / 3; }
+}
+
+/* .map-ph is gone — the dashed placeholder it styled was replaced by the real
+   Google Maps embed above. */
+
+/* --------------------------------------------------------------------------
+   LEGAL + PROSE
+   -------------------------------------------------------------------------- */
+
+.prose { display: grid; gap: 1rem; max-width: 68ch; }
+.prose h2 {
+  margin-top: 1.5rem;
+  font-size: clamp(1.4rem, 2.4vw, 1.85rem);
+  line-height: 1.2;
+}
+.prose h3 { margin-top: 0.75rem; font-size: 1.15rem; font-weight: 600; }
+.prose ul { display: grid; gap: 0.5rem; padding-left: 1.1rem; list-style: disc; }
+.prose li::marker { color: var(--accent); }
+
+.prose--spaced { margin-top: 1.5rem; }
+
+.legal-toc {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-block: 2rem;
+}
+/* Section headings are anchor targets — clear the sticky header. */
+.prose, .section-head[id] { scroll-margin-top: var(--header-h); }
+
+/* --------------------------------------------------------------------------
+   404
+   -------------------------------------------------------------------------- */
+
+/* The 404 now states itself in the PageHero eyebrow, so the oversized numeral
+   that used to head this block is gone. */
+.notfound { display: grid; gap: 1.25rem; justify-items: start; max-width: 44rem; }
+
+/* --------------------------------------------------------------------------
+   CONTACT — panel + form balance
+   -------------------------------------------------------------------------- */
+
+/* Phone leads the panel — it is the fastest route to an answer, so it is not
+   set at the same weight as the opening hours three groups below it. */
+
+/* Help text sits before the field, so expectations are set on the way in
+   rather than after a rejected submit. */
+.field__help {
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--steel);
+  margin-top: -0.15rem;
+}
+
+/* --------------------------------------------------------------------------
+   CONTACT PANEL — three cards, not one slab
+   -------------------------------------------------------------------------- */
+
+/* One tall navy block gave every detail the same weight and left dead space
+   under it whenever the form ran longer. Three cards let phone lead, group
+   what belongs together, and end wherever their content ends. */
+.contact-cards {
+  display: grid;
+  align-content: start;
+  gap: 1rem;
+}
+
+.contact-card {
+  padding: clamp(1.25rem, 2.2vw, 1.6rem);
+  background: var(--blue-deep);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-dark);
+  color: var(--steel-lt);
+}
+/* The teal top rule is the same mark the form card carries, so the two
+   columns read as a pair rather than as unrelated objects. */
+.contact-card--lead { border-top: 2px solid var(--accent); }
+
+.contact-card__label {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent-pale);
+}
+.contact-card__phone {
+  display: inline-block;
+  margin-top: 0.5rem;
+  font-family: var(--font-display);
+  font-size: clamp(1.35rem, 2.2vw, 1.7rem);
+  font-weight: 700;
+  line-height: 1.15;
+  color: var(--paper);
+  text-decoration: none;
+}
+.contact-card__phone:hover { color: var(--accent-pale); }
+.contact-card__note {
+  margin-top: 0.4rem;
+  font-size: 0.875rem;
+  color: rgba(169, 189, 209, 0.8);
+}
+.contact-card__action { margin-top: 1.15rem; }
+
+/* Labelled rows, same shape as the footer's contact block. */
+.contact-card__list { display: grid; gap: 0.6rem; margin-top: 0.9rem; }
+.contact-card__row {
+  display: grid;
+  grid-template-columns: 4rem minmax(0, 1fr);
+  gap: 0.75rem;
+  align-items: baseline;
+}
+.contact-card__row dt {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(169, 189, 209, 0.65);
+}
+.contact-card__row dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
+.contact-card__row a { color: var(--paper); text-decoration: none; }
+.contact-card__row a:hover { color: var(--accent-pale); text-decoration: underline; }
+
+.contact-card__sub {
+  margin-top: 1.15rem;
+  padding-top: 1.15rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+.contact-card address { margin-top: 0.6rem; font-size: 0.9375rem; line-height: 1.7; }
+.contact-card :focus-visible { outline-color: var(--accent-pale); }

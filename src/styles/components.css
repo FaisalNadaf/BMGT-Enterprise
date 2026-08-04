@@ -1,0 +1,1662 @@
+/**
+ * ==========================================================================
+ *    COMPONENTS — top bar, header/nav, cards, tiles, marquee, CTA band, footer.
+ *    ==========================================================================
+ *
+ * @format
+ */
+
+/* --------------------------------------------------------------------------
+   TOP BAR
+   -------------------------------------------------------------------------- */
+
+/* A hairline of brand teal along the top edge — the same 2px rule the section
+   eyebrows sit on, carried up to the very top of the page. */
+.topbar {
+	background: var(--blue-deep);
+	color: var(--steel-lt);
+	border-top: 2px solid var(--accent);
+}
+.topbar__inner {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	gap: 0.35rem 1rem;
+	padding-block: 0.6rem;
+	font-family: var(--font-mono);
+	font-size: 0.72rem;
+	letter-spacing: 0.06em;
+}
+.topbar__group {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+}
+.topbar__item {
+	color: inherit;
+	text-decoration: none;
+	transition: color var(--dur) var(--ease);
+}
+a.topbar__item:hover {
+	color: var(--accent-pale);
+}
+.topbar__item--wide {
+	color: rgba(169, 189, 209, 0.85);
+}
+.topbar__sep {
+	color: rgba(169, 189, 209, 0.5);
+}
+.topbar :focus-visible {
+	outline-color: var(--accent-pale);
+}
+
+/* --------------------------------------------------------------------------
+   HEADER + NAV
+   -------------------------------------------------------------------------- */
+
+/* Fixed overlay, not sticky. At rest it is fully transparent and sits on the
+   dark hero with light text; past 12px of scroll it becomes a frosted white
+   bar with dark text. Every route opens on a dark band (the home hero, a
+   PageHero, or the 404's PageHero) — that is the precondition for the
+   transparent state being legible, so do not add a route that opens on white
+   without giving the header a solid variant there. */
+.site-header {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	z-index: 60;
+	background: transparent;
+	border-bottom: 1px solid transparent;
+
+	/* ── The identity filter is deliberate. Do not "clean this up". ──────────
+	   This used to declare backdrop-filter only on --scrolled, so crossing the
+	   12px threshold ADDED and REMOVED the property. A backdrop-filter forces
+	   everything behind the element into a separate backdrop root, so creating
+	   and destroying it re-composites whatever is underneath — which, at the top
+	   of the home page, is the hero video. That was the flicker: it fired every
+	   time the bar changed state, in both directions.
+
+	   blur(0px) saturate(100%) is an identity transform — pixel for pixel
+	   identical to no filter — but it is a *filter*, so the backdrop root exists
+	   from first paint and is never torn down. The scrolled state only changes
+	   the radius, which the transition below interpolates. Nothing behind the
+	   header is ever re-layered.
+
+	   Cost: the header strip keeps a backdrop snapshot alive permanently. That
+	   is a fixed, bounded cost on an 84px band, and it buys a hero that does not
+	   flash on every scroll.
+
+	   ⚠️ Consequence: a backdrop-filter makes this element a containing block
+	   for fixed-position descendants. <Drawer/> is written inside </header> and
+	   is fixed, so it is portalled to <body> in Header.tsx. If that portal is
+	   ever removed, the mobile menu will collapse into this bar. */
+	backdrop-filter: blur(0px) saturate(100%);
+	-webkit-backdrop-filter: blur(0px) saturate(100%);
+	/* Pins the layer so the compositor does not promote and demote it as the
+	   class toggles — the same churn, one level down. */
+	will-change: backdrop-filter;
+
+	transition:
+		box-shadow var(--dur) var(--ease),
+		border-color var(--dur) var(--ease),
+		background-color var(--dur) var(--ease),
+		backdrop-filter var(--dur) var(--ease),
+		-webkit-backdrop-filter var(--dur) var(--ease);
+}
+.site-header--scrolled {
+	background: rgba(255, 255, 255, 0.82);
+	backdrop-filter: blur(14px) saturate(150%);
+	-webkit-backdrop-filter: blur(14px) saturate(150%);
+	box-shadow: 0 10px 30px -18px rgba(11, 31, 51, 0.55);
+	border-bottom-color: rgba(217, 226, 236, 0.7);
+}
+/* Without backdrop-filter the translucent fill would let content collide with
+   the nav text, so those browsers keep the solid bar. */
+@supports not (
+	(backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))
+) {
+	.site-header--scrolled {
+		background: var(--paper);
+	}
+}
+
+/* ---- resting (over the hero) ---- */
+
+.site-header--top .brand__word {
+	color: var(--paper);
+}
+.site-header--top .brand__sub {
+	color: rgba(255, 255, 255, 0.72);
+}
+
+.site-header--top .nav__link,
+.site-header--top .nav__trigger {
+	color: rgba(255, 255, 255, 0.92);
+}
+.site-header--top .nav__link:hover,
+.site-header--top .nav__trigger:hover,
+.site-header--top .nav__trigger[aria-expanded="true"] {
+	color: var(--paper);
+	background: rgba(255, 255, 255, 0.14);
+}
+.site-header--top .nav__link.is-active,
+.site-header--top .nav__trigger.is-active {
+	color: var(--paper);
+}
+/* --blue would disappear into the navy behind it. */
+.site-header--top .nav__indicator {
+	background: var(--accent-pale);
+}
+
+.site-header--top .nav-toggle {
+	border-color: rgba(255, 255, 255, 0.35);
+	color: var(--paper);
+}
+.site-header--top .nav-toggle:hover {
+	border-color: var(--accent-pale);
+	color: var(--accent-pale);
+}
+.site-header--top :focus-visible {
+	outline-color: var(--accent-pale);
+}
+
+/* Three columns — brand · nav · end — with the outer two sharing the leftover
+   space equally. That is what actually centres the nav on the header: with a
+   flex row the nav would sit centred in whatever the brand and CTA left over,
+   which lands off-axis because those two are different widths. */
+.site-header__inner {
+	/* Containing block for the mega-menu panels, which span this row's full
+     width rather than hanging off their trigger. */
+	position: relative;
+	display: grid;
+	grid-template-columns: 1fr auto 1fr;
+	align-items: center;
+	gap: 1.25rem;
+	padding-block: 0.875rem;
+	transition: padding-block var(--dur) var(--ease);
+}
+.site-header__end {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	justify-self: end;
+}
+.site-header--scrolled .site-header__inner {
+	padding-block: 0.5rem;
+}
+
+/* Mark + wordmark lockup. The supplied mark carries no wordmark, so "BMGT" is
+   set in the display face with a mono descriptor beneath it — same utility
+   voice as the section eyebrows.
+   ⚠️ CONFIRM: this lockup is a composition, not a supplied brand asset. */
+.brand {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.7rem;
+	flex: 0 0 auto;
+	text-decoration: none;
+}
+.brand__mark {
+	width: 52px;
+	height: auto;
+	flex: 0 0 auto;
+	object-fit: contain;
+	transition: width var(--dur) var(--ease);
+}
+.site-header--scrolled .brand__mark {
+	width: 44px;
+}
+
+/* White chip: the mark's hull is dark grey (#454B50) and disappears against
+   the navy footer, so on dark backgrounds it sits on its own light tile. */
+.brand__chip {
+	display: grid;
+	place-items: center;
+	flex: 0 0 auto;
+	padding: 7px;
+	border-radius: var(--radius-sm);
+	background: var(--paper);
+	box-shadow: var(--shadow-md);
+}
+.brand__chip .brand__mark {
+	width: 46px;
+}
+
+.brand__name {
+	display: grid;
+	gap: 0.15rem;
+}
+.brand__word {
+	font-family: var(--font-display);
+	font-weight: 700;
+	font-size: 1.35rem;
+	line-height: 1;
+	letter-spacing: -0.01em;
+	color: var(--ink);
+}
+.brand__sub {
+	font-family: var(--font-mono);
+	font-weight: 500;
+	font-size: 0.62rem;
+	line-height: 1;
+	letter-spacing: 0.16em;
+	text-transform: uppercase;
+	color: var(--steel);
+}
+.brand--onDark .brand__word {
+	color: var(--paper);
+}
+.brand--onDark .brand__sub {
+	color: var(--steel-lt);
+}
+
+.nav {
+	min-width: 0;
+}
+.nav__list {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.1rem;
+}
+.nav__item {
+	position: relative;
+}
+
+/* A hard border-bottom on every item made the row read as a set of tabs. The
+   hover is a soft pill instead, and the active state is a single indicator
+   that slides between items (see .nav__indicator). */
+.nav__link,
+.nav__trigger {
+	position: relative;
+	display: inline-flex;
+	align-items: center;
+	gap: 0.35rem;
+	min-height: 42px;
+	padding: 0 0.8rem;
+	border-radius: var(--radius);
+	color: var(--ink);
+	font-family: var(--font-body);
+	font-weight: 600;
+	font-size: 0.95rem;
+	white-space: nowrap;
+	text-decoration: none;
+	transition:
+		color var(--dur) var(--ease),
+		background-color var(--dur) var(--ease);
+}
+.nav__link:hover,
+.nav__trigger:hover,
+.nav__trigger[aria-expanded="true"] {
+	color: var(--accent-ink);
+	background: var(--mist);
+}
+/* Router-driven active state — also set on a parent whose child route is open. */
+.nav__link.is-active,
+.nav__trigger.is-active {
+	color: var(--blue);
+}
+
+/* The travelling underline. One element for the whole row, moved between items
+   by Framer's shared-layout animation, so the active mark glides rather than
+   blinking out in one place and in again in another. */
+.nav__indicator {
+	position: absolute;
+	left: 0.8rem;
+	right: 0.8rem;
+	bottom: 4px;
+	height: 2px;
+	border-radius: 1px;
+	background: var(--blue);
+}
+
+.nav__caret {
+	width: 9px;
+	height: 9px;
+	flex: 0 0 auto;
+	transition: transform var(--dur) var(--ease);
+}
+.nav__trigger[aria-expanded="true"] .nav__caret {
+	transform: rotate(180deg);
+}
+
+/* ---- mega-menu panel ---- */
+
+/* The panel resolves its offsets against .site-header__inner, not against its
+   own <li> — a trigger sitting near the right edge would otherwise push a
+   container-width panel off screen. The <li> goes static for that to reach up
+   to the header row. */
+.nav__item--mega {
+	position: static;
+}
+
+/* The wrapper carries the offset as padding, not as a top gap: an absolutely
+   positioned panel sitting 8px below the trigger leaves a dead zone that fires
+   mouseleave on the way to it, closing the menu you were reaching for. */
+.mega {
+	position: absolute;
+	top: 100%;
+	/* Inset by the gutter so the panel's edges line up with the brand mark and
+     the CTA button. left/right of 0 would resolve against the container's
+     padding box and overhang the header content by one gutter each side. */
+	left: var(--gutter);
+	right: var(--gutter);
+	z-index: 20;
+	padding-top: 0.5rem;
+	/* Origin at the top so the open animation grows downward from the trigger. */
+	transform-origin: top center;
+}
+.mega__inner {
+	padding: 0.5rem 1rem 1rem;
+	background: var(--paper);
+	border: 1px solid var(--line);
+	border-top: 2px solid var(--accent);
+	border-radius: var(--radius-lg);
+	box-shadow: var(--shadow-xl);
+	/* A laptop in a shallow window still has to be able to reach every entry. */
+	max-height: calc(100vh - var(--header-h) - 1.5rem);
+	overflow-y: auto;
+}
+
+/* ---- panel header strip ---- */
+
+/* Names the panel in the same voice as the section eyebrows, so an
+   opened menu reads as part of the catalogue rather than a floating list. */
+.mega__head {
+	display: flex;
+	align-items: baseline;
+	flex-wrap: wrap;
+	gap: 0.25rem 0.75rem;
+	padding: 0.6rem 0.6rem 0.75rem;
+	margin-bottom: 0.5rem;
+	border-bottom: 1px solid var(--line);
+}
+.mega__head-eyebrow {
+	font-family: var(--font-mono);
+	font-size: 0.62rem;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+	color: var(--accent-ink);
+}
+.mega__head-title {
+	font-family: var(--font-display);
+	font-weight: 600;
+	font-size: 0.95rem;
+	color: var(--ink);
+}
+
+.mega__grid {
+	display: grid;
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+	gap: 0.25rem;
+	align-items: start;
+}
+/* Only Construction carries sub-pages, so with `start` its cell hung lower
+   than the other three and its sub-links read as loose items under the row.
+   Stretching gives all four cells the same height, so the sub-links sit inside
+   a card that lines up with its neighbours. */
+.mega__grid--stack {
+	gap: 0.5rem;
+	align-items: stretch;
+}
+
+/* ---- the cell is the card ---- */
+
+/* The hover surface lives here, not on the link. A sub-page list cannot go
+   inside its parent <a>, so when the link carried the tint the sub-links fell
+   outside it and looked unrelated to the sector above them. */
+.mega__cell {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+	border-radius: var(--radius);
+	transition: background-color var(--dur) var(--ease);
+}
+.mega__cell:hover,
+.mega__cell:focus-within {
+	background: var(--mist);
+}
+
+/* Teal bar wiping down the leading edge — the same rule that sits under every
+   section eyebrow, reused as the hover mark. Now spans the whole cell, so on
+   Construction it runs past the sub-pages too. */
+.mega__cell::before {
+	content: "";
+	position: absolute;
+	inset-inline-start: 0;
+	top: 0.6rem;
+	bottom: 0.6rem;
+	width: 2px;
+	border-radius: 1px;
+	background: var(--accent);
+	transform: scaleY(0);
+	transform-origin: top;
+	transition: transform var(--dur) var(--ease);
+}
+.mega__cell:hover::before,
+.mega__cell:focus-within::before {
+	transform: scaleY(1);
+}
+
+.mega__link {
+	position: relative;
+	display: grid;
+	gap: 0.6rem;
+	padding: 0.6rem;
+	border-radius: var(--radius);
+	text-decoration: none;
+	transition:
+		background-color var(--dur) var(--ease),
+		transform var(--dur) var(--ease);
+}
+.mega__grid--rows .mega__link {
+	grid-template-columns: 76px minmax(0, 1fr);
+	align-items: start;
+}
+/* Only the current page keeps a fill of its own — hover is the cell's job. */
+.mega__link.is-active {
+	background: rgba(14, 92, 158, 0.1);
+}
+
+/* The 2px lift is a Framer `whileHover` on the cell, not a CSS rule — the cell
+   is a motion.li, so Framer owns its inline transform and a CSS hover
+   transform would simply be overridden by it. See MegaMenu.tsx. */
+
+/* ---- thumbnail ---- */
+
+.mega__thumb {
+	display: block;
+	overflow: hidden;
+	border: 1px solid var(--line);
+	border-radius: var(--radius-sm);
+	background: var(--mist);
+}
+.mega__grid--rows .mega__thumb {
+	aspect-ratio: 3 / 2;
+}
+.mega__grid--stack .mega__thumb {
+	aspect-ratio: 16 / 9;
+}
+
+.mega__img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+@media (prefers-reduced-motion: no-preference) {
+	.mega__img {
+		transition: transform 320ms var(--ease);
+	}
+	.mega__link:hover .mega__img,
+	.mega__link:focus-visible .mega__img {
+		transform: scale(1.06);
+	}
+}
+
+.mega__text {
+	display: grid;
+	gap: 0.15rem;
+	min-width: 0;
+}
+.mega__name {
+	display: flex;
+	align-items: center;
+	gap: 0.35rem;
+	font-family: var(--font-display);
+	font-weight: 600;
+	font-size: 0.9375rem;
+	line-height: 1.3;
+	color: var(--ink);
+	transition: color var(--dur) var(--ease);
+}
+.mega__link:hover .mega__name,
+.mega__link:focus-visible .mega__name {
+	color: var(--accent-ink);
+}
+
+/* Arrow is held out of the flow at rest so a name wrapping to two lines does
+   not reflow when it appears. */
+.mega__arrow {
+	flex: 0 0 auto;
+	opacity: 0;
+	transform: translateX(-4px);
+	transition:
+		opacity var(--dur) var(--ease),
+		transform var(--dur) var(--ease);
+}
+.mega__link:hover .mega__arrow,
+.mega__link:focus-visible .mega__arrow {
+	opacity: 1;
+	transform: translateX(0);
+}
+.mega__blurb {
+	font-size: 0.8125rem;
+	line-height: 1.45;
+	color: var(--steel);
+}
+
+/* ---- sub-pages ---- */
+
+/* One continuous rule down the left of the group ties the sub-pages to the
+   sector above them. The previous per-item leader dashes read as stray marks
+   once the items sat outside the parent's tint. */
+.mega__sub {
+	display: grid;
+	gap: 0.1rem;
+	margin: 0.15rem 0.6rem 0.6rem 1rem;
+	padding-inline-start: 0.7rem;
+	border-inline-start: 1px solid var(--line);
+}
+.mega__sublink {
+	display: block;
+	padding: 0.35rem 0.5rem;
+	border-radius: var(--radius-sm);
+	font-size: 0.8125rem;
+	font-weight: 600;
+	line-height: 1.35;
+	/* Was --steel, which at this size read as disabled text rather than as a
+     link sitting under its parent. */
+	color: var(--ink);
+	text-decoration: none;
+	transition:
+		background-color var(--dur) var(--ease),
+		color var(--dur) var(--ease);
+}
+/* Stronger than the cell's own --mist hover — otherwise pointing at a
+   sub-page inside an already-hovered card produces no change at all. */
+.mega__sublink:hover,
+.mega__sublink:focus-visible,
+.mega__sublink.is-active {
+	background: rgba(14, 92, 158, 0.12);
+	color: var(--blue);
+}
+
+/* ---- closing strip ---- */
+
+.mega__foot {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.75rem;
+	margin-top: 0.75rem;
+	padding: 0.75rem 0.6rem 0.1rem;
+	border-top: 1px solid var(--line);
+	font-size: 0.8125rem;
+	color: var(--steel);
+}
+.mega__foot-cta {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.4rem;
+	font-weight: 600;
+	color: var(--blue);
+	text-decoration: none;
+	transition: color var(--dur) var(--ease);
+}
+.mega__foot-cta:hover {
+	color: var(--accent-ink);
+}
+
+.site-header__cta {
+	flex: 0 0 auto;
+}
+
+/* ---- hamburger ---- */
+
+.nav-toggle {
+	display: none;
+	align-items: center;
+	justify-content: center;
+	width: 44px;
+	height: 44px;
+	flex: 0 0 auto;
+	border: 1px solid var(--line);
+	border-radius: var(--radius);
+	color: var(--ink);
+	transition:
+		border-color var(--dur) var(--ease),
+		color var(--dur) var(--ease);
+}
+.nav-toggle:hover {
+	border-color: var(--accent);
+	color: var(--accent-ink);
+}
+.nav-toggle__bars {
+	display: grid;
+	gap: 4px;
+	width: 18px;
+}
+.nav-toggle__bars span {
+	display: block;
+	height: 2px;
+	background: currentColor;
+	border-radius: 1px;
+}
+
+/* ---- mobile drawer ---- */
+
+.drawer-scrim {
+	position: fixed;
+	inset: 0;
+	z-index: 70;
+	background: rgba(11, 31, 51, 0.55);
+	backdrop-filter: blur(2px);
+}
+.drawer {
+	position: fixed;
+	top: 0;
+	inset-inline-end: 0;
+	bottom: 0;
+	z-index: 80;
+	width: min(22rem, 88vw);
+	display: flex;
+	flex-direction: column;
+	background: var(--paper);
+	box-shadow: var(--shadow-xl);
+	/* Only the edge that faces the page is rounded — the other three sit on the
+	   viewport edges, where a curve would just show the scrim through a notch.
+	   Logical corners, so this flips with the drawer's side in RTL. */
+	border-start-start-radius: var(--radius-lg);
+	border-end-start-radius: var(--radius-lg);
+}
+.drawer__head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+	padding: 1rem var(--gutter);
+	border-bottom: 1px solid var(--line);
+}
+.drawer__close {
+	display: grid;
+	place-items: center;
+	width: 44px;
+	height: 44px;
+	border: 1px solid var(--line);
+	border-radius: var(--radius);
+	color: var(--ink);
+}
+.drawer__close:hover {
+	border-color: var(--accent);
+	color: var(--accent-ink);
+}
+.drawer__body {
+	flex: 1 1 auto;
+	overflow-y: auto;
+	overscroll-behavior: contain;
+	padding: 1rem var(--gutter) 2rem;
+}
+.drawer__group + .drawer__group {
+	margin-top: 1.5rem;
+}
+
+/* ---- collapsible groups ----
+   The heading is the button, so the whole row is the target rather than the
+   caret alone — a 12px chevron is not a tap target. */
+.drawer__toggle {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+	width: 100%;
+	min-height: 44px;
+	padding: 0;
+	text-align: start;
+}
+.drawer__toggle .drawer__heading {
+	flex: 1 1 auto;
+	/* The heading keeps its rule, but the button owns the spacing now. */
+	padding-bottom: 0.5rem;
+	margin-bottom: 0;
+}
+.drawer__caret {
+	width: 11px;
+	height: 11px;
+	flex: 0 0 auto;
+	margin-bottom: 0.5rem;
+	color: var(--accent-ink);
+	transition: transform var(--dur) var(--ease);
+}
+.drawer__caret.is-open {
+	transform: rotate(180deg);
+}
+
+/* Height is animated by Framer; overflow keeps the links from spilling past
+   the collapsing edge mid-transition. */
+.drawer__panel {
+	overflow: hidden;
+}
+
+/* The flat group has no button, so its heading keeps the original margin. */
+.drawer__group--flat .drawer__heading {
+	margin-bottom: 0;
+}
+.drawer__heading {
+	font-family: var(--font-mono);
+	font-weight: 500;
+	font-size: 0.68rem;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+	color: var(--accent-ink);
+	padding-bottom: 0.5rem;
+	border-bottom: 2px solid var(--accent);
+}
+.drawer__link {
+	display: block;
+	padding: 0.7rem 0;
+	border-bottom: 1px solid var(--line);
+	color: var(--ink);
+	font-family: var(--font-display);
+	font-weight: 600;
+	font-size: 1rem;
+	text-decoration: none;
+	transition:
+		color var(--dur) var(--ease),
+		padding-inline-start var(--dur) var(--ease);
+}
+.drawer__link:hover {
+	color: var(--accent-ink);
+	padding-inline-start: 0.35rem;
+}
+.drawer__link.is-active {
+	color: var(--blue);
+}
+.drawer__link--child {
+	padding-inline-start: 1rem;
+	font-size: 0.9375rem;
+	font-weight: 600;
+}
+.drawer__link--child::before {
+	content: "└ ";
+	color: var(--steel);
+}
+.drawer__foot {
+	padding: 1rem var(--gutter) 1.5rem;
+	border-top: 1px solid var(--line);
+}
+
+/* --------------------------------------------------------------------------
+   CARDS
+   -------------------------------------------------------------------------- */
+
+.card {
+	display: flex;
+	flex-direction: column;
+	gap: 0.875rem;
+	height: 100%;
+	background: var(--paper);
+	border: 1px solid var(--line);
+	border-radius: var(--radius);
+	padding: 1.25rem;
+	box-shadow: var(--shadow-sm);
+	text-decoration: none;
+	transition:
+		border-color var(--dur) var(--ease),
+		box-shadow var(--dur) var(--ease),
+		background-color var(--dur) var(--ease);
+}
+.card:hover {
+	border-color: var(--accent);
+	box-shadow: var(--shadow-md);
+}
+
+.card--flat {
+	padding-block: 1.5rem;
+}
+
+/* ---- card with a photograph ---- */
+
+/* The padding moves off the card and onto the body so the image can run to the
+   card's edges; the radius has to be clipped for the image to follow it. */
+.card--media {
+	padding: 0;
+	gap: 0;
+	overflow: hidden;
+}
+.card__media {
+	display: block;
+	overflow: hidden;
+	background: var(--mist);
+	aspect-ratio: 3 / 2;
+}
+.card--onDark .card__media {
+	background: rgba(255, 255, 255, 0.06);
+}
+.card__img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+.card__body-wrap {
+	display: flex;
+	flex-direction: column;
+	gap: 0.875rem;
+	flex: 1 1 auto;
+}
+.card--media .card__body-wrap {
+	padding: 1.35rem 1.35rem 1.5rem;
+}
+
+/* "Shipbuilding, Ship Repair & Yacht Refits" wraps to two lines where the
+   other three sector names take one, which pushed that card's paragraph and
+   link a line lower than its neighbours'. Reserving two lines squares the row
+   up. 2.6em = two lines at the 1.3 line-height set below.
+   Scoped to the 4-up grid: that is the only run where a title wraps. Applied
+   globally it would reserve a blank line under every one-line heading, such as
+   the three principle cards on /about. */
+.grid--4 .card--media .card__title {
+	min-height: 2.6em;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	.card__img {
+		transition: transform 500ms var(--ease);
+	}
+	.card:hover .card__img {
+		transform: scale(1.05);
+	}
+}
+
+/* Industry cards sit on the dark band under the hero, extending the heavy
+   mass at the top of the page rather than breaking it with a pale one. */
+.card--onDark {
+	background: rgba(255, 255, 255, 0.05);
+	border-color: rgba(255, 255, 255, 0.15);
+	box-shadow: var(--shadow-dark);
+}
+.card--onDark:hover {
+	background: rgba(255, 255, 255, 0.085);
+	border-color: var(--accent);
+	box-shadow: 0 18px 38px -14px rgba(0, 0, 0, 0.6);
+}
+.card--onDark .card__title {
+	color: var(--paper);
+}
+.card--onDark .card__body {
+	color: var(--steel-lt);
+}
+
+.card__title {
+	font-size: 1.15rem;
+	line-height: 1.3;
+	font-weight: 600;
+}
+.card__body {
+	flex: 1 1 auto;
+	font-size: 0.9688rem;
+}
+.card__more {
+	font-family: var(--font-display);
+	font-weight: 600;
+	font-size: 0.875rem;
+	color: var(--blue);
+	display: inline-flex;
+	align-items: center;
+	gap: 0.4rem;
+}
+.card--onDark .card__more {
+	color: var(--accent-pale);
+}
+@media (prefers-reduced-motion: no-preference) {
+	.card:hover .btn__arrow {
+		transform: translateX(3px);
+	}
+}
+
+/* --------------------------------------------------------------------------
+   PRODUCT TILES
+   Full-bleed index: a white text panel plus a feature tile on the first row,
+   then rows of photographic tiles. Every tile is a parallelogram with a single
+   bold label over the photo. The angle only reads at this steepness on
+   landscape tiles, which is why it collapses to 0 in one column.
+   -------------------------------------------------------------------------- */
+
+.section--flush {
+	padding-inline: 0;
+}
+.tiles-wrap {
+	width: 100%;
+	padding-inline: var(--gutter);
+}
+
+.tiles {
+	--skew: 30px;
+	display: grid;
+	grid-template-columns: repeat(12, minmax(0, 1fr));
+	grid-template-rows: minmax(17.5rem, auto) repeat(
+			2,
+			clamp(12.5rem, 15vw, 15.5rem)
+		);
+	gap: 12px;
+}
+
+.tile--panel {
+	grid-column: span 6;
+}
+.tile--feature {
+	grid-column: span 6;
+}
+.tile--span3 {
+	grid-column: span 3;
+}
+.tile--span4 {
+	grid-column: span 4;
+}
+
+.panel {
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	gap: 1.1rem;
+	padding: clamp(1.75rem, 3vw, 2.75rem);
+	padding-inline-end: calc(clamp(1.75rem, 3vw, 2.75rem) + var(--skew));
+	background: var(--paper);
+	box-shadow: var(--shadow-lg);
+	/* Straight left edge against the page gutter, angled right to meet the
+     feature tile with a parallel diagonal gap. */
+	clip-path: polygon(0 0, 100% 0, calc(100% - var(--skew)) 100%, 0 100%);
+}
+.panel__eyebrow {
+	align-self: start;
+	padding: 0.4rem 0.7rem 0.36rem;
+	border: 1px solid var(--accent);
+	border-radius: 999px;
+	font-family: var(--font-mono);
+	font-weight: 500;
+	font-size: 0.66rem;
+	line-height: 1;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+	color: var(--accent-ink);
+}
+.panel__title {
+	font-size: clamp(1.75rem, 3vw, 2.6rem);
+	line-height: 1.06;
+	letter-spacing: -0.015em;
+	text-transform: uppercase;
+}
+.panel__body {
+	max-width: 42ch;
+}
+
+.tile {
+	position: relative;
+}
+.tile__link {
+	position: relative;
+	display: block;
+	height: 100%;
+	text-decoration: none;
+	transition: filter var(--dur) var(--ease);
+}
+.tile__link:hover {
+	filter: drop-shadow(0 22px 34px rgba(11, 31, 51, 0.28));
+}
+
+/* The angle sits on the media layer, not the link — clipping the link would
+   clip its own focus ring away. The shadow goes here too, so it follows the
+   angled edge instead of boxing the tile with a rectangle. */
+.tile__media {
+	position: absolute;
+	inset: 0;
+	overflow: hidden;
+	background: var(--ink);
+	box-shadow: var(--shadow-lg);
+	clip-path: polygon(
+		var(--skew) 0,
+		100% 0,
+		calc(100% - var(--skew)) 100%,
+		0 100%
+	);
+}
+.tile__img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	transition: transform 340ms var(--ease);
+}
+/* Scrim weighted to the bottom strip only, so the photograph stays the
+   subject. Alphas measured against the actual images. */
+.tile__media::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(
+		to top,
+		rgba(5, 18, 33, 0.96) 0%,
+		rgba(5, 18, 33, 0.9) 15%,
+		rgba(5, 18, 33, 0.52) 31%,
+		rgba(5, 18, 33, 0.12) 52%,
+		rgba(5, 18, 33, 0) 70%
+	);
+	transition: opacity var(--dur) var(--ease);
+}
+.tile__label {
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	padding: 1.15rem 1.35rem;
+	padding-inline-end: calc(1.35rem + var(--skew));
+	color: var(--paper);
+	font-size: 0.875rem;
+	line-height: 1.35;
+	font-weight: 700;
+	letter-spacing: 0.03em;
+	text-transform: uppercase;
+	text-shadow: 0 1px 12px rgba(5, 18, 33, 0.55);
+}
+
+/* Outer edges of every row sit flush with the page gutter; only internal edges
+   slant. Positions are fixed by the layout: 1 = panel, 2 = feature,
+   3-6 = second row, 7-9 = third row. */
+.tile:nth-child(3) .tile__media,
+.tile:nth-child(7) .tile__media {
+	clip-path: polygon(0 0, 100% 0, calc(100% - var(--skew)) 100%, 0 100%);
+}
+.tile:nth-child(2) .tile__media,
+.tile:nth-child(6) .tile__media,
+.tile:nth-child(9) .tile__media {
+	clip-path: polygon(var(--skew) 0, 100% 0, 100% 100%, 0 100%);
+}
+
+.tile__link:hover .tile__media::after {
+	opacity: 0.82;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	.tile__link:hover .tile__img {
+		transform: scale(1.05);
+	}
+}
+
+/* --------------------------------------------------------------------------
+   BRAND MARQUEE + LOGO GRID
+   The track holds two identical rows, so animating it to translateX(-50%)
+   lands exactly one row along and the loop is seamless.
+   -------------------------------------------------------------------------- */
+
+.marquee {
+	--mq-gap: 1rem;
+	width: 100%;
+	/* Default (and reduced-motion) state: a plain horizontal scroller, inset to
+     the gutter so it lines up with the heading above it. */
+	overflow-x: auto;
+	overscroll-behavior-x: contain;
+	padding-block: 0.5rem;
+	padding-inline: var(--gutter);
+}
+.marquee__track {
+	display: flex;
+	width: max-content;
+}
+.marquee__row {
+	display: flex;
+	align-items: stretch;
+	gap: var(--mq-gap);
+	/* Matches the internal gap so the seam between the two rows is invisible. */
+	padding-inline: 0 var(--mq-gap);
+}
+
+/* Card chrome lives on the cell so a real logo and a wordmark fallback frame
+   identically. */
+.logo-cell {
+	flex: 0 0 auto;
+	display: grid;
+	place-items: center;
+	width: clamp(9.5rem, 13vw, 12rem);
+	height: clamp(5.5rem, 7vw, 6.75rem);
+	padding: 1rem 1.15rem;
+	background: var(--paper);
+	border: 1px solid var(--line);
+	border-radius: var(--radius);
+	box-shadow: var(--shadow-sm);
+	transition:
+		border-color var(--dur) var(--ease),
+		box-shadow var(--dur) var(--ease);
+}
+/* contain, never stretch — the supplied logos range from 400x99 to 232x160. */
+.logo-cell img {
+	max-width: 100%;
+	max-height: 100%;
+	width: auto;
+	height: auto;
+	object-fit: contain;
+	/* Full colour. These were desaturated so eleven marks of very different
+     colour and weight would read as one row; showing them as the manufacturers
+     actually present them is the client's call, and the cell chrome below is
+     what now does the unifying instead. */
+	transition: filter var(--dur) var(--ease);
+}
+.logo-cell:hover {
+	border-color: var(--accent);
+	box-shadow: var(--shadow-md);
+}
+/* Marks are no longer flattened to grey, so the row is held together by even
+   cells rather than even colour — a touch more contrast on hover keeps the
+   hover state legible without a desaturate/saturate flip. */
+@media (prefers-reduced-motion: no-preference) {
+	.logo-cell:hover img {
+		filter: contrast(1.06);
+	}
+}
+
+/* ---- centred brands section ---- */
+
+.brands__note {
+	margin-top: 1.75rem;
+	font-size: 0.9688rem;
+	color: var(--steel);
+}
+/* The strip is symmetrical, so the copy around it is centred to match. */
+.brands-center {
+	text-align: center;
+}
+.brands-center .brands__note {
+	max-width: 52ch;
+	margin-inline: auto;
+}
+.brands-center .about__actions {
+	justify-content: center;
+}
+
+/* Static grid used on /brands, where the logos are content rather than trim. */
+.brand-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
+	gap: 1rem;
+}
+.brand-grid .logo-cell {
+	width: 100%;
+	height: clamp(7rem, 10vw, 8.5rem);
+}
+.brand-grid__item {
+	display: grid;
+	gap: 0.6rem;
+	justify-items: center;
+}
+.brand-grid__name {
+	font-family: var(--font-mono);
+	font-size: 0.66rem;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+	color: var(--steel);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	.marquee--animated {
+		overflow: hidden;
+		/* Animated, it runs edge to edge — the mask handles the ends. */
+		padding-inline: 0;
+		mask-image: linear-gradient(
+			90deg,
+			transparent 0,
+			#000 6rem,
+			#000 calc(100% - 6rem),
+			transparent 100%
+		);
+	}
+	.marquee--animated .marquee__track {
+		animation: marquee var(--mq-dur, 42s) linear infinite;
+	}
+	/* Let someone stop it to read a logo. */
+	.marquee--animated:hover .marquee__track,
+	.marquee--animated:focus-within .marquee__track {
+		animation-play-state: paused;
+	}
+	.logo-cell:hover {
+		transform: translateY(-3px);
+		transition: transform var(--dur) var(--ease);
+	}
+}
+
+@keyframes marquee {
+	from {
+		transform: translateX(0);
+	}
+	to {
+		transform: translateX(-50%);
+	}
+}
+
+/* --------------------------------------------------------------------------
+   CTA BAND
+   -------------------------------------------------------------------------- */
+
+/* A flat blue band was the one place the page went inert. Rather than an
+   aurora gradient — which would be off-brief for a supplier catalogue — the
+   band carries a faint blueprint grid, the same drawing-sheet vocabulary as
+   the mono eyebrows. Both layers are decorative and sit behind the content. */
+.cta-band {
+	position: relative;
+	overflow: hidden;
+	isolation: isolate;
+}
+
+.cta-band::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	background-image:
+		repeating-linear-gradient(
+			to right,
+			rgba(255, 255, 255, 0.07) 0 1px,
+			transparent 1px 72px
+		),
+		repeating-linear-gradient(
+			to bottom,
+			rgba(255, 255, 255, 0.07) 0 1px,
+			transparent 1px 72px
+		);
+	/* Fades the ruling out before it reaches the edges, so the grid reads as a
+     texture under the copy instead of tiling flat to the section boundary. */
+	-webkit-mask-image: radial-gradient(
+		120% 100% at 15% 50%,
+		#000 0%,
+		transparent 72%
+	);
+	mask-image: radial-gradient(120% 100% at 15% 50%, #000 0%, transparent 72%);
+}
+
+/* A single soft teal wash, weighted to the action side. */
+.cta-band::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	background: radial-gradient(
+		60% 120% at 88% 30%,
+		rgba(23, 162, 184, 0.28) 0%,
+		transparent 70%
+	);
+}
+
+/* Copy left, action right — a left-aligned block on its own half of a wide
+   blue band was mostly empty space. */
+.cta-band__inner {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto;
+	align-items: center;
+	gap: clamp(2rem, 5vw, 4rem);
+}
+.cta-band .section-head {
+	margin-bottom: 1.25rem;
+}
+.cta-band .section-head__title {
+	max-width: 20ch;
+}
+.cta-band .rule {
+	max-width: 9rem;
+}
+.cta-band__sub {
+	color: rgba(255, 255, 255, 0.92);
+	font-size: 1.125rem;
+	max-width: 46ch;
+}
+.cta-band__actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.875rem;
+}
+
+/* --------------------------------------------------------------------------
+   FOOTER
+   -------------------------------------------------------------------------- */
+
+.site-footer {
+	background: var(--ink);
+	color: var(--steel-lt);
+}
+/* Padding lives here, not on the footer, so the legal bar sits flush to the
+   bottom edge of the page. */
+.site-footer__main {
+	padding-block: clamp(3rem, 5vw, 4.5rem);
+}
+.footer-grid {
+	display: grid;
+	grid-template-columns: 1.6fr 1fr 1fr 0.9fr;
+	gap: clamp(2rem, 4vw, 3.5rem);
+}
+.footer-col {
+	display: grid;
+	gap: 1rem;
+	align-content: start;
+}
+/* Headings inside a column that already has content above them need to sit
+   away from it, or "Reach us" crowds the blurb it follows. */
+.footer-col .footer__heading:not(:first-child) {
+	margin-top: 0.5rem;
+}
+.footer__blurb {
+	font-size: 0.9688rem;
+	max-width: 34ch;
+}
+.footer__heading {
+	font-family: var(--font-mono);
+	font-weight: 500;
+	font-size: 0.72rem;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+	color: var(--accent-pale);
+}
+.footer__list {
+	display: grid;
+	gap: 0.125rem;
+}
+.footer__link {
+	display: inline-block;
+	padding-block: 0.35rem;
+	color: var(--steel-lt);
+	font-size: 0.9688rem;
+	text-decoration: none;
+	transition: color var(--dur) var(--ease);
+}
+.footer__link:hover {
+	color: var(--paper);
+	text-decoration: underline;
+}
+.footer__link--child {
+	padding-left: 0.9rem;
+	font-size: 0.9063rem;
+}
+.footer__link--child::before {
+	content: "└ ";
+	color: rgba(169, 189, 209, 0.5);
+}
+.site-footer :focus-visible {
+	outline-color: var(--accent-pale);
+}
+.footer__address {
+	font-size: 0.9375rem;
+	line-height: 1.7;
+}
+
+/* Phone and the three inboxes, each with a small label so the column reads as
+   a contact block rather than four loose links. */
+.footer__contact li {
+	display: grid;
+	grid-template-columns: 4.5rem minmax(0, 1fr);
+	gap: 0.75rem;
+	align-items: baseline;
+}
+.footer__label {
+	font-family: var(--font-mono);
+	font-size: 0.62rem;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+	color: rgba(169, 189, 209, 0.7);
+}
+/* A long address must wrap rather than widen the column. */
+.footer__contact .footer__link {
+	overflow-wrap: anywhere;
+}
+
+/* Legal bar — one centred line, pipe separated. Separators are aria-hidden so
+   screen readers don't announce "vertical bar" between each clause.
+   Same fill as the footer above it: the old --blue-deep band read as a second
+   surface stuck to the bottom of the page. A hairline does the separating. */
+.legal-bar {
+	background: var(--ink);
+	border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+.legal-bar__text {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: center;
+	gap: 0.25rem 0.7rem;
+	padding-block: 1.1rem;
+	text-align: center;
+	font-size: 0.875rem;
+	color: var(--steel-lt);
+}
+.legal-bar__sep {
+	color: rgba(169, 189, 209, 0.45);
+}
+.legal-bar__link {
+	color: var(--accent-pale);
+	text-decoration: none;
+}
+.legal-bar__link:hover {
+	text-decoration: underline;
+}
+.legal-bar :focus-visible {
+	outline-color: var(--accent-pale);
+}
+
+/* "All products" sits at the foot of the footer's category list — a route,
+   not a category, so it is marked off from the eight above it. */
+.footer__link--all {
+	margin-top: 0.35rem;
+	padding-top: 0.5rem;
+	border-top: 1px solid rgba(217, 226, 236, 0.16);
+	font-family: var(--font-mono);
+	font-size: 0.68rem;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+}
+
+/* --------------------------------------------------------------------------
+   LOCALE TOGGLE
+   -------------------------------------------------------------------------- */
+
+/* Two segments in one pill. Sits in .site-header__end beside the CTA, so it
+   mirrors with the rest of the header in RTL — the confirmed behaviour. */
+.lang {
+	display: inline-flex;
+	align-items: center;
+	flex: 0 0 auto;
+	padding: 2px;
+	border: 1px solid var(--line);
+	border-radius: 999px;
+	background: var(--paper);
+}
+.lang__opt {
+	min-height: 32px;
+	padding: 0 0.7rem;
+	border-radius: 999px;
+	font-family: var(--font-mono);
+	font-size: 0.68rem;
+	font-weight: 500;
+	letter-spacing: 0.1em;
+	color: var(--steel);
+	transition:
+		background-color var(--dur) var(--ease),
+		color var(--dur) var(--ease);
+}
+.lang__opt:hover {
+	color: var(--accent-ink);
+}
+.lang__opt.is-active {
+	background: var(--blue);
+	color: var(--paper);
+}
+
+/* Over the hero the header is transparent, so the pill goes translucent to
+   match the nav links rather than sitting on a white chip. */
+.site-header--top .lang {
+	border-color: rgba(255, 255, 255, 0.35);
+	background: rgba(255, 255, 255, 0.1);
+}
+.site-header--top .lang__opt {
+	color: rgba(255, 255, 255, 0.92);
+}
+.site-header--top .lang__opt.is-active {
+	background: var(--paper);
+	color: var(--ink);
+}
+
+/* Full-width in the mobile drawer, where it shows native names not codes. */
+.lang--block {
+	display: flex;
+	width: 100%;
+}
+.lang--block .lang__opt {
+	flex: 1 1 0;
+	min-height: 40px;
+	font-size: 0.75rem;
+}
+
+/* The Arabic option is set in the Arabic face wherever it appears. */
+.lang__opt[lang="ar"] {
+	font-family: "IBM Plex Sans Arabic", var(--font-mono);
+	letter-spacing: 0;
+}
+
+/* --------------------------------------------------------------------------
+   CAROUSEL
+   -------------------------------------------------------------------------- */
+
+.carousel {
+	display: grid;
+	gap: 1.5rem;
+	/* Hoisted so the slide-width calc can subtract it. --cv-max comes in inline
+     from the perView prop; --cv-per is what the width actually uses, so the
+     breakpoints below can lower it. */
+	--cv-gap: clamp(1rem, 2.5vw, 2rem);
+	--cv-max: 2;
+	--cv-per: var(--cv-max);
+}
+
+/* scroll-snap does the work: touch swipe, keyboard scrolling and RTL travel
+   all come from the browser. scrollbar-width hides the native bar without
+   killing the scrolling itself, so it degrades to a plain scroller if JS
+   never runs. */
+.carousel__track {
+	display: flex;
+	gap: var(--cv-gap);
+	overflow-x: auto;
+	scroll-snap-type: x mandatory;
+	scroll-behavior: smooth;
+	scrollbar-width: none;
+	-ms-overflow-style: none;
+	/* Room for the card lift and shadow, which would otherwise be clipped by
+     the scroll container. */
+	padding-block: 0.5rem;
+	cursor: grab;
+	/* Stops the browser claiming horizontal pointer gestures for its own
+     back-navigation before the drag handler sees them. */
+	touch-action: pan-y;
+}
+.carousel__track::-webkit-scrollbar {
+	display: none;
+}
+.carousel__track:active {
+	cursor: grabbing;
+}
+
+/* While dragging, snapping and smooth scrolling both have to be off — they
+   fight direct scrollLeft writes. Releasing drops the class, snap comes back
+   and the browser settles on the nearest slide by itself. */
+.carousel--dragging .carousel__track {
+	scroll-snap-type: none;
+	scroll-behavior: auto;
+	cursor: grabbing;
+	/* Otherwise the drag paints a text selection across every card it crosses. */
+	user-select: none;
+}
+.carousel--dragging .carousel__slide * {
+	pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.carousel__track {
+		scroll-behavior: auto;
+	}
+}
+
+.carousel__slide {
+	flex: 0 0 calc((100% - (var(--cv-per) - 1) * var(--cv-gap)) / var(--cv-per));
+	scroll-snap-align: start;
+	min-width: 0;
+}
+
+/* ---- controls ---- */
+
+.carousel__controls {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 1rem;
+}
+
+.carousel__arrow {
+	display: grid;
+	place-items: center;
+	width: 40px;
+	height: 40px;
+	flex: 0 0 auto;
+	border: 1px solid var(--line);
+	border-radius: 999px;
+	color: var(--ink);
+	transition:
+		border-color var(--dur) var(--ease),
+		color var(--dur) var(--ease),
+		background-color var(--dur) var(--ease);
+}
+.carousel__arrow:hover {
+	border-color: var(--accent);
+	color: var(--accent-ink);
+}
+.carousel__icon {
+	width: 14px;
+	height: 10px;
+}
+/* One icon, pointed both ways — the "previous" arrow is the same glyph
+   reflected, so it stays correct when the whole layout mirrors in RTL. */
+.carousel__arrow--prev .carousel__icon {
+	transform: scaleX(-1);
+}
+
+.carousel__dots {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+.carousel__dot {
+	display: block;
+	width: 8px;
+	height: 8px;
+	padding: 0;
+	border-radius: 999px;
+	background: var(--line);
+	transition:
+		background-color var(--dur) var(--ease),
+		width var(--dur) var(--ease);
+}
+.carousel__dot:hover {
+	background: var(--steel);
+}
+.carousel__dot.is-active {
+	width: 22px;
+	background: var(--blue);
+}
+
+/* On the dark bands the chrome has to invert or it disappears. */
+.section--ink .carousel__arrow,
+.section--deep .carousel__arrow {
+	border-color: rgba(255, 255, 255, 0.25);
+	color: var(--paper);
+}
+.section--ink .carousel__arrow:hover,
+.section--deep .carousel__arrow:hover {
+	border-color: var(--accent-pale);
+	color: var(--accent-pale);
+}
+.section--ink .carousel__dot,
+.section--deep .carousel__dot {
+	background: rgba(255, 255, 255, 0.28);
+}
+.section--ink .carousel__dot.is-active,
+.section--deep .carousel__dot.is-active {
+	background: var(--accent-pale);
+}

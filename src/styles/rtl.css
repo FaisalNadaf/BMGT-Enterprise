@@ -1,0 +1,227 @@
+/* ==========================================================================
+   RTL + ARABIC
+   Loaded last so it can override the physical values in the sheets above.
+
+   Everything here is scoped to [dir="rtl"] or [lang="ar"]. The English site
+   must render byte-identically with this file present — if a rule would
+   change LTR, it is in the wrong file.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   TYPOGRAPHY
+   -------------------------------------------------------------------------- */
+
+/* One family for all three roles. Archivo, Source Sans 3 and IBM Plex Mono
+   have no Arabic coverage; IBM Plex Sans Arabic is the sibling of the mono
+   face already loaded, so the utility labels keep their family relationship. */
+[lang="ar"] {
+  --font-display: "IBM Plex Sans Arabic", "Segoe UI", Tahoma, sans-serif;
+  --font-body: "IBM Plex Sans Arabic", "Segoe UI", Tahoma, sans-serif;
+  --font-mono: "IBM Plex Sans Arabic", "Segoe UI", Tahoma, sans-serif;
+}
+
+/* Arabic has no case, so uppercase is a no-op that only signals a sloppy
+   port — and letter-spacing is actively destructive: it breaks the cursive
+   joins between letters. Both are applied site-wide to the eyebrow/label
+   pattern in the English sheets, so both are unwound here in one place. */
+[lang="ar"] .eyebrow,
+[lang="ar"] .crumbs,
+[lang="ar"] .panel__eyebrow,
+[lang="ar"] .card__more,
+[lang="ar"] .cap__more,
+[lang="ar"] .pcard__more,
+[lang="ar"] .mega__head-eyebrow,
+[lang="ar"] .mega__code,
+[lang="ar"] .brand__sub,
+[lang="ar"] .brand-grid__name,
+[lang="ar"] .footer__heading,
+[lang="ar"] .footer__link--all,
+[lang="ar"] .field__label,
+[lang="ar"] .contact-panel__label,
+[lang="ar"] .detail__fact dt,
+[lang="ar"] .cat__meta,
+[lang="ar"] .todo,
+[lang="ar"] .hero__cue,
+[lang="ar"] .hero__spec li,
+[lang="ar"] .spec-list__n,
+[lang="ar"] .tile__label,
+[lang="ar"] .legal-bar {
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+/* Arabic sits taller in the line box — ascenders and the deep descenders on
+   ج ح خ need more room than the Latin faces were tuned for. */
+[lang="ar"] body { line-height: 1.8; }
+[lang="ar"] .hero__title,
+[lang="ar"] .page-hero__title,
+[lang="ar"] .section-head__title { line-height: 1.25; }
+[lang="ar"] .card__title,
+[lang="ar"] .cat__name,
+[lang="ar"] .cap__title,
+[lang="ar"] .pcard__title { line-height: 1.5; }
+
+/* The display face is set tight for Archivo's mechanical grotesque; negative
+   tracking on Arabic collapses the joins. */
+[lang="ar"] .hero__title,
+[lang="ar"] .page-hero__title,
+[lang="ar"] .section-head__title,
+[lang="ar"] .brand__word { letter-spacing: 0; }
+
+/* --------------------------------------------------------------------------
+   DIRECTIONAL FIXES
+   The grids, flex rows and logical properties mirror on their own. These are
+   the places where a physical value or a transform is baked in.
+   -------------------------------------------------------------------------- */
+
+/* Arrows point at "forward", which is leftward in Arabic. Covers every
+   ArrowRight instance — buttons, cards, mega-menu, capability blocks. */
+[dir="rtl"] .btn__arrow,
+[dir="rtl"] .mega__arrow { transform: scaleX(-1); }
+
+/* ...which means the hover nudge has to invert too, or the arrow slides back
+   into the label. These override the LTR translateX(3px) rules. */
+@media (prefers-reduced-motion: no-preference) {
+  [dir="rtl"] .btn:hover .btn__arrow,
+  [dir="rtl"] .card:hover .btn__arrow,
+  [dir="rtl"] a.cap:hover .btn__arrow,
+  [dir="rtl"] .pcard:hover .btn__arrow { transform: scaleX(-1) translateX(3px); }
+
+  [dir="rtl"] .mega__link:hover .mega__arrow,
+  [dir="rtl"] .mega__link:focus-visible .mega__arrow {
+    transform: scaleX(-1) translateX(0);
+  }
+  [dir="rtl"] .mega__arrow { transform: scaleX(-1) translateX(-4px); }
+}
+
+/* The section-head rule draws itself in with scaleX from its origin. Left in
+   LTR, so it has to start from the right here or it grows away from the
+   heading. (.mega__cell::before and .mega__sub now use logical properties in
+   components.css and need nothing.) */
+[dir="rtl"] .rule { transform-origin: right center; }
+[dir="rtl"] .section-head--center .rule { transform-origin: center; }
+
+/* ---- inner-page hero photograph ----
+   The photograph is masked to sit opposite the copy and fade out behind it.
+   Gradients take physical directions only — there is no `to inline-end` — so
+   the LTR `to right` would leave the fade under the Arabic copy instead of
+   away from it. Same stops, reflected.
+
+   The ::after scrim is reflected the same way: a CSS gradient angle mirrors
+   about the vertical as 360 - θ, so its 100deg becomes 260deg. (80deg would
+   still point rightward — it is the mirror about the *horizontal*.)
+
+   Both are held above 1024px on purpose. responsive.css drops the mask and
+   flattens the scrim below that, and these selectors carry an attribute on top
+   of the class, so unscoped they would outrank those overrides and the Arabic
+   site alone would keep a desktop treatment on a phone. */
+@media (min-width: 1025px) {
+  [dir="rtl"] .page-hero__bgwrap {
+    -webkit-mask-image: linear-gradient(to left,
+      transparent 8%,
+      rgba(0, 0, 0, 0.18) 26%,
+      rgba(0, 0, 0, 0.55) 44%,
+      rgba(0, 0, 0, 0.88) 60%,
+      #000 74%);
+    mask-image: linear-gradient(to left,
+      transparent 8%,
+      rgba(0, 0, 0, 0.18) 26%,
+      rgba(0, 0, 0, 0.55) 44%,
+      rgba(0, 0, 0, 0.88) 60%,
+      #000 74%);
+  }
+  [dir="rtl"] .page-hero::after {
+    background:
+      linear-gradient(260deg,
+        rgba(7, 47, 82, 0.88) 0%,
+        rgba(7, 47, 82, 0.6) 34%,
+        rgba(7, 47, 82, 0.3) 62%,
+        rgba(7, 47, 82, 0.18) 100%),
+      linear-gradient(180deg, rgba(11, 31, 51, 0.5) 0%, rgba(11, 31, 51, 0.2) 45%, rgba(11, 31, 51, 0.5) 100%);
+  }
+}
+
+/* ---- tile parallelograms ----
+   The home tile grid is clipped into parallelograms whose slant follows the
+   reading direction. The polygons are hand-authored per nth-child, so they do
+   not mirror on their own — every point is reflected here as x → 100% - x,
+   with the winding order rewritten to stay clockwise.
+
+   The grid itself already mirrors (it is CSS Grid), and the padding that
+   compensates for each slant is written with padding-inline-end, which flips
+   with the direction. Only the clip geometry needed doing by hand.
+
+   Zeroing --skew instead would be less work but the layout would visibly
+   change between languages — the whole section would go from angled to
+   rectangular, which is not a translation. */
+
+/* Text panel: straight edge to the gutter, angled edge toward the feature tile. */
+[dir="rtl"] .panel {
+  clip-path: polygon(0 0, 100% 0, 100% 100%, var(--skew) 100%);
+}
+
+/* Default tile — angled on both sides. */
+[dir="rtl"] .tile__media {
+  clip-path: polygon(0 0, calc(100% - var(--skew)) 0, 100% 100%, var(--skew) 100%);
+}
+
+/* Row-start tiles: flush against the leading gutter. */
+[dir="rtl"] .tile:nth-child(3) .tile__media,
+[dir="rtl"] .tile:nth-child(7) .tile__media {
+  clip-path: polygon(0 0, 100% 0, 100% 100%, var(--skew) 100%);
+}
+
+/* Row-end tiles: flush against the trailing gutter. */
+[dir="rtl"] .tile:nth-child(2) .tile__media,
+[dir="rtl"] .tile:nth-child(6) .tile__media,
+[dir="rtl"] .tile:nth-child(9) .tile__media {
+  clip-path: polygon(0 0, calc(100% - var(--skew)) 0, 100% 100%, 0 100%);
+}
+
+/* Two-up grid re-maps which edges are flush, so the mirrors do too. */
+@media (max-width: 1024px) {
+  [dir="rtl"] .tile:nth-child(2) .tile__media {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+  }
+  [dir="rtl"] .tile:nth-child(odd) .tile__media {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, var(--skew) 100%);
+  }
+  [dir="rtl"] .tile:nth-child(even):not(:nth-child(2)) .tile__media {
+    clip-path: polygon(0 0, calc(100% - var(--skew)) 0, 100% 100%, 0 100%);
+  }
+}
+
+/* The sitemap's sub-item leader is a box-drawing glyph that points down-and-
+   right; mirrored it has to point down-and-left. */
+[dir="rtl"] .footer__link--child::before { content: "┘ "; }
+[dir="rtl"] .footer__link--child { padding-left: 0; padding-right: 0.9rem; }
+
+/* Marquee travels toward the start edge; in RTL that is the other way. */
+[dir="rtl"] .marquee--animated .marquee__track { animation-direction: reverse; }
+
+/* Numerals stay Western (0–9) per the client decision, but the mono numerals
+   in a scope list must not be reordered by the bidi algorithm when they sit
+   beside Arabic text — isolate them. */
+[dir="rtl"] .spec-list__n,
+[dir="rtl"] .hero__spec-n { unicode-bidi: isolate; }
+
+/* Latin runs inside Arabic prose — the brand name, emails, the phone number,
+   manufacturer marks. Isolating them stops the bidi algorithm dragging
+   trailing punctuation to the wrong end of the line. */
+[dir="rtl"] .latin {
+  unicode-bidi: isolate;
+  direction: ltr;
+}
+
+/* --------------------------------------------------------------------------
+   OVERFLOW GUARDS
+   Arabic runs 20–30% longer than English in places. These stop that turning
+   into a horizontal scrollbar rather than papering over a layout bug.
+   -------------------------------------------------------------------------- */
+
+[dir="rtl"] .nav__link,
+[dir="rtl"] .nav__trigger { padding-inline: 0.65rem; }
+
+[lang="ar"] .btn { text-align: center; }
+[lang="ar"] .hero__title { font-size: clamp(2.2rem, 6vw, 4.5rem); }
+[lang="ar"] .page-hero__title { font-size: clamp(1.9rem, 4.2vw, 3.1rem); }

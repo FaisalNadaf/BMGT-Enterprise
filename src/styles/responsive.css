@@ -1,0 +1,216 @@
+/* ==========================================================================
+   BREAKPOINTS — 1024 / 768 / 480, matching the demo.
+   Kept in one file so a change to the grid at one width is visible next to
+   every other change at that width.
+   ========================================================================== */
+
+@media (max-width: 1024px) {
+  /* Six top-level items plus two dropdowns and a CTA stop fitting here, so the
+     desktop nav is swapped for the drawer rather than being squeezed. */
+  .nav { display: none; }
+  .nav-toggle { display: inline-flex; }
+  /* Nav is gone, so the middle column would collapse and strand the end group
+     mid-header. Two columns: brand left, CTA + toggle right. */
+  .site-header__inner { grid-template-columns: 1fr auto; }
+
+  .grid--4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .grid--3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+  /* Narrower viewport shows less of the photo, so pull the framing toward the
+     ship rather than the empty quayside. The hero stays full-height here —
+     only the framing changes. */
+  .hero__bg { object-position: 70% 50%; }
+
+  /* Copy spans nearly the full width at this size, so the radial vignette has
+     nothing to vignette against. Flat vertical scrim instead, still weighted
+     at the top for the transparent header. */
+  /* .hero__scrim, not .hero::after — the home hero's scrim is a real element
+     now (see pages.css). This override is the reason that rename had to be
+     chased through: left pointing at the pseudo-element it matched nothing, and
+     the desktop vignette would have stayed on at phone widths. */
+  .hero__scrim {
+    background: linear-gradient(180deg,
+      rgba(11, 31, 51, 0.68) 0%,
+      rgba(7, 47, 82, 0.66) 45%,
+      rgba(11, 31, 51, 0.82) 100%);
+  }
+  .page-hero::after {
+    background: linear-gradient(180deg,
+      rgba(11, 31, 51, 0.6) 0%,
+      rgba(7, 47, 82, 0.72) 45%,
+      rgba(11, 31, 51, 0.84) 100%);
+  }
+  /* The desktop band splits into a navy copy side and a photographic side. At
+     this width the copy spans nearly the whole container, so there is no side
+     left to give the photograph — the mask would just erase most of it and dim
+     the rest. Full-bleed photo under the flat scrim above instead. */
+  .page-hero__bgwrap {
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+
+  .about,
+  .detail,
+  .contact { grid-template-columns: minmax(0, 1fr); }
+  .about--reverse .about__media { order: 0; }
+  /* Stacked, the row no longer has a taller sibling to stretch against, so the
+     photo goes back to carrying its own ratio. */
+  .about__media { max-width: 26rem; }
+  .about__img { height: auto; min-height: 0; aspect-ratio: 4 / 3; }
+  /* Unstuck and full-width, a 4:3 photograph in the panel would run to the
+     whole container height. Cap it the same way the About media is capped. */
+  .detail__aside { position: static; max-width: 30rem; }
+
+  .footer-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+  /* Tiles go two-up; rows size to content instead of the fixed 3-row track. */
+  .tiles {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: none;
+  }
+  .tile--panel, .tile--feature { grid-column: span 2; }
+  .tile--span3, .tile--span4 { grid-column: span 1; }
+  .tile--feature .tile__link,
+  .tile--span3 .tile__link,
+  .tile--span4 .tile__link { aspect-ratio: 16 / 10; }
+
+  /* Re-map the flush edges for a two-up grid. */
+  .tile:nth-child(2) .tile__media {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+  }
+  .tile:nth-child(odd) .tile__media {
+    clip-path: polygon(0 0, 100% 0, calc(100% - var(--skew)) 100%, 0 100%);
+  }
+  .tile:nth-child(even):not(:nth-child(2)) .tile__media {
+    clip-path: polygon(var(--skew) 0, 100% 0, 100% 100%, 0 100%);
+  }
+}
+
+@media (max-width: 768px) {
+  .grid--2 { grid-template-columns: minmax(0, 1fr); }
+
+  /* The catalogue grid is a fixed three columns rather than auto-fill, so it
+     needs stepping down explicitly. Three across a ~720px container leaves the
+     product shots smaller than they were before the change. */
+  .cat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+  /* The capability card is now one-per-row rather than two, so it is no wider
+     than before while the image column would still take 12rem of it. Narrow
+     the image so the paragraph keeps a readable measure down to 481px, where
+     the card goes vertical instead. */
+  .cap { grid-template-columns: 10rem minmax(0, 1fr); }
+  .cap__text { padding: 1.35rem 1.4rem; }
+
+  .cta-band__inner { grid-template-columns: minmax(0, 1fr); }
+  .cta-band__actions .btn { justify-self: start; }
+
+  .section-head__title { max-width: none; }
+  .form__row { grid-template-columns: minmax(0, 1fr); }
+}
+
+@media (max-width: 480px) {
+  .grid--4, .grid--3 { grid-template-columns: minmax(0, 1fr); }
+  .cat-grid { grid-template-columns: minmax(0, 1fr); }
+
+  /* A 12rem image column beside the copy leaves the paragraph about 180px wide
+     here, which wraps to a ragged column. The card goes vertical instead —
+     photo on top at a wider ratio, since it now has the full measure. */
+  .cap { grid-template-columns: minmax(0, 1fr); }
+  .cap__media { aspect-ratio: 16 / 9; }
+  .cap__text { padding: 1.25rem 1.25rem 1.35rem; }
+
+  /* Single column: --skew 0 collapses every polygon() to a clean rectangle.
+     A full-bleed parallelogram on a phone reads as a rendering error. */
+  .tiles {
+    --skew: 0px;
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .tile--panel, .tile--feature,
+  .tile--span3, .tile--span4 { grid-column: span 1; }
+
+  /* Phone and email stack; the middots would strand at the end of a wrapped
+     line, so drop them and let the gap do the separating. */
+  .topbar__item--wide, .topbar__sep { display: none; }
+  .topbar__inner { gap: 0.2rem 1rem; }
+
+  .footer-grid { grid-template-columns: minmax(0, 1fr); }
+
+  /* Stack the legal clauses instead of wrapping mid-line with a dangling pipe. */
+  .legal-bar__text { flex-direction: column; gap: 0.35rem; }
+  .legal-bar__sep { display: none; }
+
+  .hero__actions .btn { flex: 1 1 100%; }
+
+  /* The wordmark alone is enough at this width; the CTA needs the room. */
+  .brand__name { display: none; }
+  .brand-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* Chromium holds a reveal's "from" state for anything off-screen, which would
+   print blank pages. Force everything visible for print. */
+@media print {
+  *, *::before, *::after {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .site-header, .topbar, .drawer, .drawer-scrim, .marquee { display: none !important; }
+}
+
+/* Carousel slides-per-view steps down with the viewport. min() rather than a
+   flat override so a carousel already set to 2 does not get widened to 3. */
+@media (max-width: 1024px) {
+  .carousel { --cv-per: min(2, var(--cv-max)); }
+}
+@media (max-width: 768px) {
+  /* One card per view — a third of a phone screen is not a card, it is a
+     thumbnail with a paragraph wrapped to four words a line. */
+  .carousel { --cv-per: 1; }
+}
+
+/* ==========================================================================
+   RESPONSIVENESS PASS — additive only.
+   Every rule below is inside a max-width query or a pointer/env query, so no
+   declaration here can reach ≥1280px. Desktop is untouched by construction.
+   ========================================================================== */
+
+/* ---- header fits a 320px screen ----
+   At 320px the container is 280px, but brand 46 + gap 20 + language pill ~88
+   + CTA ~120 + hamburger 44 + gaps came to ~342px — about 60px of horizontal
+   scroll. The CTA is the one item that is genuinely duplicated: it already
+   sits at the foot of the drawer, which the hamburger beside it opens. */
+@media (max-width: 480px) {
+  .site-header__cta { display: none; }
+}
+
+/* ---- safe-area on fixed / bottom-anchored surfaces ---- */
+@supports (padding: env(safe-area-inset-bottom)) {
+  /* The drawer runs to the bottom edge, so its last action would sit under
+     the home indicator. */
+  .drawer__foot { padding-bottom: max(1.25rem, env(safe-area-inset-bottom)); }
+  /* Last band on the page, flush to the viewport bottom. */
+  .legal-bar { padding-bottom: env(safe-area-inset-bottom); }
+}
+
+/* ---- touch targets ----
+   Scoped to coarse pointers so mouse users keep the current compact chrome. */
+@media (pointer: coarse) {
+  /* 40 → 44px, the documented minimum. */
+  .carousel__arrow { width: 44px; height: 44px; }
+
+  /* The dot itself stays 8px visually; an invisible ::after does the
+     catching. Note: eight dots × a full 44px would need 352px, wider than a
+     320px screen, so this lands at ~32px — bigger than the arrows-only
+     alternative, and the 44px arrows remain the compliant control. */
+  .carousel__dots { gap: 0.75rem; }
+  .carousel__dot { position: relative; }
+  .carousel__dot::after {
+    content: "";
+    position: absolute;
+    inset: -12px -10px;
+  }
+
+  /* Sitemap rows sit ~24px tall in a dense column. */
+  .footer__link { padding-block: 0.6rem; }
+  .footer__contact li { align-items: center; }
+}
