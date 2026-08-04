@@ -6,7 +6,6 @@ import { SectionHead } from "../components/SectionHead";
 import { CTABand } from "../components/CTABand";
 import { Reveal } from "../components/Reveal";
 import { site } from "../data/site";
-import { certifications } from "../data/certifications";
 import { useLocale } from "../i18n/useLocale";
 
 /**
@@ -15,9 +14,145 @@ import { useLocale } from "../i18n/useLocale";
  * reviewed by a lawyer and none of it is specific to BMGT's jurisdiction,
  * data processors or contract terms. It must be replaced with the client's own
  * legal copy before the site goes live.
+ *
+ * ── Structure ──────────────────────────────────────────────────────────────
+ * This was three stacked sections of unbroken prose, which is how a legal page
+ * ends up unread: a buyer looking for the quotations clause had to scan all of
+ * it. It is now a contents rail beside a column of clause cards, one heading
+ * and one answer each, so a single clause can be found — and linked to.
+ *
+ * ── The clauses are data, not markup ───────────────────────────────────────
+ * Every clause is the same shape, and the old file hand-wrote thirteen
+ * near-identical blocks. That repetition is what let it drift: the three
+ * sections had already diverged in wrapper markup. Adding, reordering or
+ * removing a clause is now an edit to GROUPS and nothing else.
+ *
+ * ── Copy is untouched ──────────────────────────────────────────────────────
+ * Every string is an existing dictionary key. No text was invented here, which
+ * also keeps en/ar in parity — the build fails on a mismatch, and inventing
+ * English copy would mean shipping an untranslated Arabic page.
  */
+
+type Clause = {
+	/** Heading key. */
+	h: string;
+	/** Body key. Omitted where `items` carries the body instead. */
+	p?: string;
+	/** Interpolation values for `p`. */
+	vars?: Record<string, string>;
+	/** Bulleted body, for a clause that enumerates rather than explains. */
+	items?: { key: string; vars?: Record<string, string> }[];
+	/**
+	 * Contact affordances appended after the body. These cannot live inside a
+	 * translation string: they are anchors carrying dir and class attributes,
+	 * and markup in the dictionary is how a translator ends up breaking a
+	 * mailto link.
+	 */
+	after?: "email" | "emailPhone";
+};
+
+type Group = {
+	id: string;
+	eyebrow: string;
+	title: string;
+	/** One or more lead paragraphs, before the cards. */
+	lead: { key: string; vars?: Record<string, string> }[];
+	clauses: Clause[];
+};
+
+/* Module constant: `site` is a static import and none of this depends on the
+   active locale. Only the t() lookups in the component do. */
+const GROUPS: Group[] = [
+	{
+		id: "privacy",
+		eyebrow: "ui.legal.privacyEyebrow",
+		title: "ui.legal.privacyTitle",
+		lead: [{ key: "ui.legal.privacyP1" }],
+		clauses: [
+			{
+				h: "ui.legal.privacyCollectedH",
+				items: [
+					{ key: "ui.legal.privacyCollected1" },
+					{ key: "ui.legal.privacyCollected2", vars: { name: site.name } },
+				],
+			},
+			{ h: "ui.legal.privacyNotH", p: "ui.legal.privacyNotP" },
+			{ h: "ui.legal.privacyThirdH", p: "ui.legal.privacyThirdP" },
+			{ h: "ui.legal.privacyRetentionH", p: "ui.legal.privacyRetentionP" },
+			{
+				h: "ui.legal.privacyRightsH",
+				p: "ui.legal.privacyRightsP",
+				after: "email",
+			},
+		],
+	},
+	{
+		id: "terms",
+		eyebrow: "ui.legal.termsEyebrow",
+		title: "ui.legal.termsTitle",
+		lead: [{ key: "ui.legal.termsP1" }],
+		clauses: [
+			{
+				h: "ui.legal.termsContentH",
+				p: "ui.legal.termsContentP",
+				vars: { name: site.legalName },
+			},
+			{ h: "ui.legal.termsMarksH", p: "ui.legal.termsMarksP" },
+			{ h: "ui.legal.termsOrdersH", p: "ui.legal.termsOrdersP" },
+			{
+				h: "ui.legal.termsLinksH",
+				p: "ui.legal.termsLinksP",
+				vars: { name: site.name },
+			},
+		],
+	},
+	{
+		id: "disclaimer",
+		eyebrow: "ui.legal.disclaimerEyebrow",
+		title: "ui.legal.disclaimerTitle",
+		lead: [
+			{ key: "ui.legal.disclaimerP1" },
+			{ key: "ui.legal.disclaimerP2", vars: { name: site.legalName } },
+		],
+		clauses: [
+			{
+				h: "ui.legal.disclaimerContactH",
+				p: "ui.legal.disclaimerContactP",
+				after: "emailPhone",
+			},
+		],
+	},
+];
+
+const TOC = [
+	{ id: "privacy", key: "ui.legal.tocPrivacy" },
+	{ id: "terms", key: "ui.legal.tocTerms" },
+	{ id: "disclaimer", key: "ui.legal.tocDisclaimer" },
+];
+
 export default function Legal() {
 	const { t, lp } = useLocale();
+
+	/* Built once and reused. Both are Latin-script and direction-locked: an
+	   email address or a phone number reads left-to-right even inside an Arabic
+	   paragraph, and without dir="ltr" a leading "+" lands on the wrong side.
+	   Same treatment the footer already uses. */
+	const mail = (
+		<a
+			className="latin"
+			dir="ltr"
+			href={`mailto:${site.emails.info}`}>
+			{site.emails.info}
+		</a>
+	);
+	const tel = (
+		<a
+			className="latin"
+			dir="ltr"
+			href={site.phone.href}>
+			{site.phone.display}
+		</a>
+	);
 
 	return (
 		<PageShell
@@ -38,178 +173,107 @@ export default function Legal() {
 			/>
 
 			<section className="section">
-				<div className="container">
-					<Reveal>
-						<nav
-							className="legal-toc"
-							aria-label={t("ui.legal.tocLabel")}>
-							<a
-								className="chip"
-								href="#privacy">
-								{t("ui.legal.tocPrivacy")}
-							</a>
-							<a
-								className="chip"
-								href="#terms">
-								{t("ui.legal.tocTerms")}
-							</a>
-							<a
-								className="chip"
-								href="#disclaimer">
-								{t("ui.legal.tocDisclaimer")}
-							</a>
-						</nav>
-					</Reveal>
+				<div className="container legal-layout">
+					{/* ── contents rail ──────────────────────────────────────────────
+					    Sticky on desktop so the clause list stays reachable however far
+					    down you are. Below 1024px it lies flat above the content — a
+					    sticky rail on a phone is just lost height. */}
+					<nav
+						className="legal-rail"
+						aria-label={t("ui.legal.tocLabel")}>
+						<p className="legal-rail__label">{t("ui.legal.tocLabel")}</p>
+						<ul className="legal-rail__list">
+							{TOC.map((item) => (
+								<li key={item.id}>
+									<a
+										className="legal-rail__link"
+										href={`#${item.id}`}>
+										{t(item.key)}
+									</a>
+								</li>
+							))}
+						</ul>
+					</nav>
 
-					{/* ── PRIVACY ───────────────────────────────────────────────────── */}
-					<Reveal direction="left">
-						<SectionHead
-							eyebrow={t("ui.legal.privacyEyebrow")}
-							title={t("ui.legal.privacyTitle")}
-							id="privacy"
-							flush
-						/>
-						<div className="prose prose--spaced">
-							<p>{t("ui.legal.privacyP1")}</p>
-							<h3>{t("ui.legal.privacyCollectedH")}</h3>
-							<ul>
-								<li>{t("ui.legal.privacyCollected1")}</li>
-								<li>{t("ui.legal.privacyCollected2", { name: site.name })}</li>
-							</ul>
-							<h3>{t("ui.legal.privacyNotH")}</h3>
-							<p>{t("ui.legal.privacyNotP")}</p>
-							<h3>{t("ui.legal.privacyThirdH")}</h3>
-							<p>{t("ui.legal.privacyThirdP")}</p>
-							<h3>{t("ui.legal.privacyRetentionH")}</h3>
-							<p>{t("ui.legal.privacyRetentionP")}</p>
-							<h3>{t("ui.legal.privacyRightsH")}</h3>
-							<p>
-								{t("ui.legal.privacyRightsP")}{" "}
-								<a
-									className="latin"
-									dir="ltr"
-									href={`mailto:${site.emails.info}`}>
-									{site.emails.info}
-								</a>
-								.
-							</p>
-						</div>
-					</Reveal>
-				</div>
-			</section>
+					<div className="legal-body">
+						{/* ui.legal.todo was translated into both locales and then never
+						    rendered anywhere. On a page whose every clause is unreviewed
+						    boilerplate, that warning is the most important thing on it —
+						    it belongs in front of the reader, not idle in the dictionary. */}
+						<Reveal
+							as="p"
+							className="todo"
+							direction="none">
+							{t("ui.legal.todo")}
+						</Reveal>
 
-			{/* ── TERMS ───────────────────────────────────────────────────────── */}
-			<section className="section section--mist">
-				<div className="container">
-					<Reveal direction="left">
-						<SectionHead
-							eyebrow={t("ui.legal.termsEyebrow")}
-							title={t("ui.legal.termsTitle")}
-							id="terms"
-							flush
-						/>
-						<div className="prose prose--spaced">
-							<p>{t("ui.legal.termsP1")}</p>
-							<h3>{t("ui.legal.termsContentH")}</h3>
-							<p>{t("ui.legal.termsContentP", { name: site.legalName })}</p>
-							<h3>{t("ui.legal.termsMarksH")}</h3>
-							<p>{t("ui.legal.termsMarksP")}</p>
-							<h3>{t("ui.legal.termsOrdersH")}</h3>
-							<p>{t("ui.legal.termsOrdersP")}</p>
-							<h3>{t("ui.legal.termsLinksH")}</h3>
-							<p>{t("ui.legal.termsLinksP", { name: site.name })}</p>
-						</div>
-					</Reveal>
-				</div>
-			</section>
+						{GROUPS.map((group) => (
+							<Reveal
+								as="article"
+								key={group.id}
+								className="legal-group"
+								direction="left">
+								<SectionHead
+									eyebrow={t(group.eyebrow)}
+									title={t(group.title)}
+									id={group.id}
+									flush
+								/>
 
-			{/* ── CERTIFICATIONS ──────────────────────────────────────────────────
-          Renders the list once BMGT supplies it. Until then it states the gap
-          rather than showing plausible-looking certificate names — a
-          certification claim is a representation about a third-party audit,
-          and inventing one is not a copywriting decision. */}
-			<section
-				className="section section--mist"
-				aria-labelledby="certifications">
-				<div className="container">
-					<Reveal direction="left">
-						<SectionHead
-							eyebrow={t("ui.legal.certsEyebrow")}
-							title={t("ui.legal.certsTitle")}
-							id="certifications"
-							flush
-						/>
+								<div className="legal-group__lead">
+									{group.lead.map((line) => (
+										<p key={line.key}>{t(line.key, line.vars)}</p>
+									))}
+								</div>
 
-						{certifications.length > 0 ?
-							<>
-								<ul className="cat-grid">
-									{certifications.map((cert) => (
-										<li key={cert.name}>
-											{/* No media on these — the shared card just runs body-only. */}
-											<article className="cat">
-												<p className="cat__meta">{cert.issuer}</p>
-												<span className="cat__body">
-													<h3 className="cat__name">{cert.name}</h3>
-													{cert.scope && (
-														<p className="cat__line">{cert.scope}</p>
+								<ul className="clause-grid">
+									{group.clauses.map((clause) => (
+										<li
+											className="clause"
+											key={clause.h}>
+											<h3 className="clause__title">{t(clause.h)}</h3>
+
+											{clause.items ?
+												<ul className="clause__list">
+													{clause.items.map((item) => (
+														<li key={item.key}>{t(item.key, item.vars)}</li>
+													))}
+												</ul>
+											:	<p className="clause__body">
+													{t(clause.p ?? "", clause.vars)}
+													{clause.after === "email" && <> {mail}.</>}
+													{clause.after === "emailPhone" && (
+														<>
+															{" "}
+															{mail} · {tel}.
+														</>
 													)}
-												</span>
-											</article>
+												</p>
+											}
 										</li>
 									))}
 								</ul>
-								<p className="brands__note">{t("ui.legal.certsNote")}</p>
-							</>
-						:	<p className="todo">{t("ui.legal.certsEmpty")}</p>}
-					</Reveal>
-				</div>
-			</section>
+							</Reveal>
+						))}
 
-			{/* ── DISCLAIMER ──────────────────────────────────────────────────── */}
-			<section className="section">
-				<div className="container">
-					<Reveal direction="left">
-						<SectionHead
-							eyebrow={t("ui.legal.disclaimerEyebrow")}
-							title={t("ui.legal.disclaimerTitle")}
-							id="disclaimer"
-							flush
-						/>
-						<div className="prose prose--spaced">
-							<p>{t("ui.legal.disclaimerP1")}</p>
-							<p>{t("ui.legal.disclaimerP2", { name: site.legalName })}</p>
-							<h3>{t("ui.legal.disclaimerContactH")}</h3>
-							<p>
-								{t("ui.legal.disclaimerContactP")}{" "}
-								<a
-									className="latin"
-									dir="ltr"
-									href={`mailto:${site.emails.info}`}>
-									{site.emails.info}
-								</a>{" "}
-								<a
-									className="latin"
-									dir="ltr"
-									href={site.phone.href}>
-									{site.phone.display}
-								</a>
-								.
-							</p>
-							<p>
-								{t("ui.legal.disclaimerRights", {
-									year: site.year,
-									name: site.legalName,
-								})}{" "}
-								<a
-									href={site.credit.href}
-									target="_blank"
-									rel="noopener noreferrer">
-									{site.credit.label}
-								</a>
-								.
-							</p>
-						</div>
-					</Reveal>
+						{/* Copyright and credit close the page rather than sitting in the
+						    disclaimer's card grid — a colophon, not a clause. */}
+						<Reveal
+							as="p"
+							className="legal-colophon">
+							{t("ui.legal.disclaimerRights", {
+								year: site.year,
+								name: site.legalName,
+							})}{" "}
+							<a
+								href={site.credit.href}
+								target="_blank"
+								rel="noopener noreferrer">
+								{site.credit.label}
+							</a>
+							.
+						</Reveal>
+					</div>
 				</div>
 			</section>
 

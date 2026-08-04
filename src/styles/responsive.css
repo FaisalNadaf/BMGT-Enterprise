@@ -52,6 +52,12 @@
   .about,
   .detail,
   .contact { grid-template-columns: minmax(0, 1fr); }
+
+  /* The contents rail lies flat above the clauses. Sticky is pointless once it
+     is full-width — it would pin a block of links over the content you scrolled
+     to read — so the position is unset, not just the column. */
+  .legal-layout { grid-template-columns: minmax(0, 1fr); }
+  .legal-rail { position: static; }
   .about--reverse .about__media { order: 0; }
   /* Stacked, the row no longer has a taller sibling to stretch against, so the
      photo goes back to carrying its own ratio. */
@@ -103,6 +109,10 @@
 
   .cta-band__inner { grid-template-columns: minmax(0, 1fr); }
   .cta-band__actions .btn { justify-self: start; }
+
+  /* One clause per row. Two columns of a ~340px card leaves each body about
+     four words wide. */
+  .clause-grid { grid-template-columns: minmax(0, 1fr); }
 
   .section-head__title { max-width: none; }
   .form__row { grid-template-columns: minmax(0, 1fr); }

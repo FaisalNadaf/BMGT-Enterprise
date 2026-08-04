@@ -869,6 +869,147 @@ a.cap:hover .cap__title { color: var(--accent-pale); }
   gap: 0.6rem;
   margin-block: 2rem;
 }
+
+/* --------------------------------------------------------------------------
+   LEGAL — contents rail + clause cards
+   -------------------------------------------------------------------------- */
+
+/* A fixed rail rather than a fraction: the contents list is short, known text,
+   and letting it flex means it grows on a wide screen for no reason while the
+   prose column — the part that actually wants a comfortable measure — is the
+   one that gets squeezed. */
+.legal-layout {
+  display: grid;
+  grid-template-columns: 14rem minmax(0, 1fr);
+  gap: clamp(2rem, 5vw, 4.5rem);
+  align-items: start;
+}
+
+/* Sticky against the fixed header, not the viewport top, or the rail slides
+   under the bar. Same --header-h every in-page anchor clears. */
+.legal-rail {
+  position: sticky;
+  top: calc(var(--header-h) + 1.5rem);
+  display: grid;
+  gap: 0.75rem;
+}
+.legal-rail__label {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent-ink);
+  padding-bottom: 0.6rem;
+  border-bottom: 2px solid var(--accent);
+}
+.legal-rail__list {
+  display: grid;
+  gap: 0.1rem;
+}
+/* The teal marker sits in the border, so it can appear on hover without the
+   text shifting — a border added on hover would reflow the whole rail. */
+.legal-rail__link {
+  display: block;
+  padding: 0.5rem 0 0.5rem 0.75rem;
+  border-inline-start: 2px solid transparent;
+  color: var(--ink);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition:
+    color var(--dur) var(--ease),
+    border-color var(--dur) var(--ease),
+    padding-inline-start var(--dur) var(--ease);
+}
+.legal-rail__link:hover,
+.legal-rail__link:focus-visible {
+  color: var(--accent-ink);
+  border-inline-start-color: var(--accent);
+  padding-inline-start: 1rem;
+}
+
+.legal-body {
+  display: grid;
+  gap: clamp(2.5rem, 5vw, 4rem);
+  min-width: 0;
+}
+
+.legal-group {
+  display: grid;
+  gap: 1.25rem;
+}
+/* The lead keeps a prose measure; the cards below it do not need one, because
+   each card is already narrow. */
+.legal-group__lead {
+  display: grid;
+  gap: 0.75rem;
+  max-width: 68ch;
+}
+
+/* Two up on desktop. A clause is a short answer to a short question, so a
+   single full-width column would leave most of the row empty and put the page
+   back to being a scroll. */
+.clause-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin-top: 0.25rem;
+}
+
+.clause {
+  display: grid;
+  gap: 0.5rem;
+  align-content: start;
+  padding: 1.15rem 1.25rem 1.3rem;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  /* The teal top rule marks these as the same family as the form card and the
+     lead contact card, which carry it for the same reason. */
+  border-top: 2px solid var(--accent);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  transition:
+    border-color var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease);
+}
+.clause:hover {
+  border-color: var(--accent);
+  box-shadow: var(--shadow-md);
+}
+
+.clause__title {
+  font-size: 1.0625rem;
+  line-height: 1.3;
+  font-weight: 600;
+  color: var(--ink);
+}
+.clause__body {
+  font-size: 0.9688rem;
+  line-height: 1.6;
+  color: var(--steel);
+}
+.clause__list {
+  display: grid;
+  gap: 0.45rem;
+  padding-inline-start: 1.1rem;
+  list-style: disc;
+  font-size: 0.9688rem;
+  line-height: 1.6;
+  color: var(--steel);
+}
+.clause__list li::marker {
+  color: var(--accent);
+}
+
+/* Colophon: the copyright line. Set smaller and ruled off, so it reads as the
+   foot of the page rather than as one more clause. */
+.legal-colophon {
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--line);
+  font-size: 0.9063rem;
+  color: var(--steel);
+}
 /* Section headings are anchor targets — clear the sticky header. */
 .prose, .section-head[id] { scroll-margin-top: var(--header-h); }
 
