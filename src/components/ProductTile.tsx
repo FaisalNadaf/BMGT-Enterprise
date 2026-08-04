@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { StaggerItem } from './Reveal'
 import { useImageReveal } from '../lib/useImageReveal'
+import { useLocale } from '../i18n/useLocale'
 import type { Product } from '../data/products'
 import { productPath } from '../data/products'
 
@@ -21,10 +22,18 @@ export function ProductTile({ product, span, eager = false }: Props) {
   /* Eager tiles are the first row, already painted before any scroll — fading
      those in is how a hero starts to feel slow rather than polished. */
   const img = useImageReveal(eager)
+  const { lp } = useLocale()
 
   return (
     <StaggerItem as="li" className={`tile tile--${span}`}>
-      <Link className="tile__link" to={productPath(product)}>
+      {/* lp() is not optional. Paths in data/products.ts are stored without a
+          locale ("/products/steel"), and every route lives under "/:locale", so
+          an unprefixed href does not match a product route at all — it falls
+          through to the catch-all and redirects, which is why these tiles
+          appeared to do nothing. This was the only link on the site missing the
+          prefix; the mega menu, the /products index, the footer and the 404 all
+          wrap productPath() the same way. */}
+      <Link className="tile__link" to={lp(productPath(product))}>
         <span className="tile__media">
           <img
             className={`tile__img ${img.className}`}

@@ -10,8 +10,10 @@ import { ArrowRight } from './Icons'
  * swipe, keyboard scrolling and RTL travel direction from the browser for
  * free — a translateX track has to reimplement all three, and gets RTL wrong
  * more often than not because `scrollLeft` inverts under `dir="rtl"`.
- * Movement is driven with `scrollIntoView({ inline: 'start' })`, which is
- * direction-aware by spec, so nothing here needs to know which way is forward.
+ * Movement is driven with `track.scrollBy()` by a delta measured from the
+ * slide's current position — see goTo. It must not go back to
+ * `slide.scrollIntoView()`: that scrolls every scrollable ancestor including
+ * the document, so each auto-advance yanked the whole page to the carousel.
  *
  * Auto-advance stops on hover, on focus inside the track, and when the tab is
  * hidden. Under `prefers-reduced-motion` it never starts, and the strip stays
@@ -83,14 +85,43 @@ export function Carousel({ children, interval = 5, label, perView = 2 }: Props) 
       if (!track) return
       const wrapped = (next + count) % count
       const slide = track.children[wrapped] as HTMLElement | undefined
-      slide?.scrollIntoView({
+      if (!slide) return
+
+      /* Scroll the track, never the slide.
+       *
+       * This was slide.scrollIntoView({ inline: 'start', block: 'nearest' }),
+       * which is what made the page jump. scrollIntoView walks *every*
+       * scrollable ancestor and scrolls each one until the element is in view —
+       * the document included. `block: 'nearest'` limits how far it goes
+       * vertically, it does not stop it: whenever the carousel was not already
+       * fully within the viewport, each advance dragged the window down to it.
+       * On a five-second auto-advance that meant the page hauling itself back
+       * to the carousel while you were trying to read something else.
+       *
+       * scrollBy on the track is contained by definition — a scroll container
+       * moving its own content cannot affect an ancestor.
+       *
+       * A relative delta from measured positions, rather than assigning
+       * scrollLeft, is what keeps this correct in Arabic. scrollIntoView was
+       * originally chosen because it is direction-aware by spec; scrollLeft is
+       * the opposite — RTL numbers it from the right and modern browsers report
+       * it as zero-or-negative, so any absolute arithmetic has to know the
+       * convention. Measuring where the slide is *now* and moving by the
+       * difference sidesteps the question: align leading edges, and the leading
+       * edge is simply the other side in RTL. */
+      const slideBox = slide.getBoundingClientRect()
+      const trackBox = track.getBoundingClientRect()
+      const delta = isRTL
+        ? slideBox.right - trackBox.right
+        : slideBox.left - trackBox.left
+
+      track.scrollBy({
+        left: delta,
         behavior: smooth && !reduced ? 'smooth' : 'auto',
-        inline: 'start',
-        block: 'nearest',
       })
       setIndex(wrapped)
     },
-    [count, reduced],
+    [count, isRTL, reduced],
   )
 
   /* Track which slide is actually in view — the user can swipe or scroll past
