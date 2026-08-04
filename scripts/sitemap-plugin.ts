@@ -1,7 +1,7 @@
 import type { Plugin } from 'vite'
 import { products, productPath } from '../src/data/products'
 import { allIndustryRoutes, industryPath } from '../src/data/industries'
-import { LOCALES, DEFAULT_LOCALE } from '../src/i18n'
+import { LOCALES } from '../src/i18n'
 
 /**
  * Emits sitemap.xml and robots.txt at build time.
@@ -18,12 +18,25 @@ import { LOCALES, DEFAULT_LOCALE } from '../src/i18n'
  * The data files have no imports of their own (no React, no CSS), which is what
  * makes them safe to pull into the Vite config, where esbuild handles the TS.
  *
- * ── Bilingual ──────────────────────────────────────────────────────────────
- * Every page exists at /en/… and /ar/…. Listing both as unrelated URLs invites
- * a duplicate-content read, so each entry carries xhtml:link alternates naming
- * its counterpart plus x-default — the same relationships PageShell emits as
- * <link rel="alternate" hreflang> at runtime. Crawlers that do not run JS only
- * ever see the sitemap's copy, which is the main reason it is worth doing here.
+ * ── Format ─────────────────────────────────────────────────────────────────
+ * Plain sitemaps.org 0.9 and nothing else: one namespace, and loc / lastmod /
+ * changefreq / priority per entry, matching the house format used on
+ * cubiccode.in so the two files read the same way.
+ *
+ * Deliberately NOT here, having been tried and removed on request:
+ *
+ *   xhtml:link hreflang alternates. Every page exists at /en/… and /ar/…, and
+ *   the sitemap is silent about the relationship between the two. PageShell
+ *   still emits <link rel="alternate" hreflang> at runtime, so the pairing is
+ *   declared — but only to crawlers that execute JavaScript. If Search Console
+ *   starts reporting the ar and en copies as duplicates competing with each
+ *   other, this is the first thing to put back.
+ *
+ *   image:image entries. The catalogue photography is rendered client-side, so
+ *   nothing in the served HTML names those files either. If image search
+ *   traffic matters later, that is the second thing to put back.
+ *
+ * Both were working; `git log` on this file has the implementation.
  */
 
 /** Routes that exist for every locale, independent of the catalogue data. */
@@ -35,6 +48,45 @@ function allPaths(): string[] {
     ...products.map((p) => productPath(p)),
     ...allIndustryRoutes.map(({ industry, parent }) => industryPath(industry, parent)),
   ]
+}
+
+/*
+ * ── changefreq / priority ──────────────────────────────────────────────────
+ * Worth knowing what these buy: Google has said outright that it ignores both.
+ * Bing and several smaller crawlers still read them. They are therefore
+ * harmless and mildly useful — provided the numbers describe the site honestly
+ * rather than being padded, which is the failure mode that made Google stop
+ * trusting them in the first place. So: `priority` is relative *within this
+ * site only* (it is not a ranking dial), and `changefreq` says how often the
+ * page's content is expected to change, not how often it is redeployed.
+ *
+ * The catalogue is the commercial core of the site, so product pages sit above
+ * sector pages; /legal is boilerplate and sits at the bottom.
+ */
+type Rank = { changefreq: string; priority: string }
+
+const RANKS: Record<string, Rank> = {
+  '/': { changefreq: 'weekly', priority: '1' },
+  '/products': { changefreq: 'weekly', priority: '0.9' },
+  '/contact': { changefreq: 'monthly', priority: '0.8' },
+  '/about': { changefreq: 'monthly', priority: '0.7' },
+  '/brands': { changefreq: 'monthly', priority: '0.6' },
+  '/legal': { changefreq: 'yearly', priority: '0.3' },
+}
+
+function rankFor(path: string): Rank {
+  const stated = RANKS[path]
+  if (stated) return stated
+  /* Catalogue detail: the eight category pages carry the product copy people
+     actually search for. */
+  if (path.startsWith('/products/')) return { changefreq: 'monthly', priority: '0.8' }
+  /* Sector pages — a child (/industries/construction/granite) sits one step
+     below its parent, mirroring the nesting. */
+  if (path.startsWith('/industries/')) {
+    const depth = path.split('/').filter(Boolean).length
+    return { changefreq: 'monthly', priority: depth > 2 ? '0.6' : '0.7' }
+  }
+  return { changefreq: 'monthly', priority: '0.5' }
 }
 
 /** `/` is the locale root — /en, not /en/. Everything else is /<locale><path>. */
@@ -73,45 +125,35 @@ function resolveOrigin(fallback?: string) {
 }
 
 function buildSitemap(origin: string) {
-  /* Date only, no time: lastmod is about the content, and a timestamp that
-     changes on every deploy trains crawlers to distrust the field. */
-      const lastmod = new Date().toISOString().slice(0, 10)
+  /* Full ISO timestamp, matching the house format. It is build time, not
+     content-edit time — a static build has no other date to offer — so every
+     URL carries the same stamp and it moves on every deploy. Treat it as "as of
+     this deploy" rather than as a per-page edit date. */
+  const lastmod = new Date().toISOString()
 
-      const paths = allPaths()
+  const paths = allPaths()
 
-      const urls = LOCALES.flatMap((locale) =>
-        paths.map((path) => {
-          const loc = localised(origin, locale, path)
-          const alternates = [
-            ...LOCALES.map(
-              (l) =>
-                `    <xhtml:link rel="alternate" hreflang="${l}" href="${escapeXml(
-                  localised(origin, l, path),
-                )}" />`,
-            ),
-            `    <xhtml:link rel="alternate" hreflang="x-default" href="${escapeXml(
-              localised(origin, DEFAULT_LOCALE, path),
-            )}" />`,
-          ].join('\n')
+  const urls = LOCALES.flatMap((locale) =>
+    paths.map((path) => {
+      const { changefreq, priority } = rankFor(path)
 
-          return [
-            '  <url>',
-            `    <loc>${escapeXml(loc)}</loc>`,
-            alternates,
-            `    <lastmod>${lastmod}</lastmod>`,
-            '  </url>',
-          ].join('\n')
-        }),
-      )
+      /* Element order is not cosmetic: the sitemaps.org schema declares <url>
+         as a sequence of loc, lastmod, changefreq, priority. A validator
+         rejects the file if they are reordered. */
+      return [
+        '  <url>',
+        `    <loc>${escapeXml(localised(origin, locale, path))}</loc>`,
+        `    <lastmod>${lastmod}</lastmod>`,
+        `    <changefreq>${changefreq}</changefreq>`,
+        `    <priority>${priority}</priority>`,
+        '  </url>',
+      ].join('\n')
+    }),
+  )
 
-      /* No <changefreq> or <priority>. Google has stated plainly that it
-         ignores both, and they are the two fields most often filled in with
-         invented numbers that make a sitemap look authoritative while saying
-         nothing. Leaving them out keeps the file honest. */
   const xml = [
     '<?xml version="1.0" encoding="UTF-8"?>',
-    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"',
-    '        xmlns:xhtml="http://www.w3.org/1999/xhtml">',
+    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
     ...urls,
     '</urlset>',
     '',
