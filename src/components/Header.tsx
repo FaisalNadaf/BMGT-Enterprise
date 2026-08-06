@@ -60,8 +60,8 @@ function NavItem({
    sits on its own white tile there.
    The wordmark stays Latin in both locales — it is a trademark, and the
    confirmed carve-out keeps company and manufacturer names untranslated.
-   ⚠️ CONFIRM: "BMGT / ENTERPRISE" set in Archivo + IBM Plex Mono is a
-   composition, not a supplied lockup. Replace if an official one exists. */
+   ⚠️ CONFIRM: "BMGT" set in Archivo is a composition, not a supplied
+   lockup. Replace if an official one exists. */
 export function Brand({ chip = false }: { chip?: boolean }) {
 	const mark = (
 		<img
@@ -82,7 +82,6 @@ export function Brand({ chip = false }: { chip?: boolean }) {
 				aria-hidden="true"
 				dir="ltr">
 				<span className="brand__word">BMGT</span>
-				<span className="brand__sub">Enterprise</span>
 			</span>
 		</>
 	);

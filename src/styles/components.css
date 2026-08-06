@@ -128,9 +128,6 @@ a.topbar__item:hover {
 .site-header--top .brand__word {
 	color: var(--paper);
 }
-.site-header--top .brand__sub {
-	color: rgba(255, 255, 255, 0.72);
-}
 
 .site-header--top .nav__link,
 .site-header--top .nav__trigger {
@@ -189,8 +186,7 @@ a.topbar__item:hover {
 }
 
 /* Mark + wordmark lockup. The supplied mark carries no wordmark, so "BMGT" is
-   set in the display face with a mono descriptor beneath it — same utility
-   voice as the section eyebrows.
+   set in the display face beside it.
    ⚠️ CONFIRM: this lockup is a composition, not a supplied brand asset. */
 .brand {
 	display: inline-flex;
@@ -227,7 +223,6 @@ a.topbar__item:hover {
 
 .brand__name {
 	display: grid;
-	gap: 0.15rem;
 }
 .brand__word {
 	font-family: var(--font-display);
@@ -237,20 +232,8 @@ a.topbar__item:hover {
 	letter-spacing: -0.01em;
 	color: var(--ink);
 }
-.brand__sub {
-	font-family: var(--font-mono);
-	font-weight: 500;
-	font-size: 0.62rem;
-	line-height: 1;
-	letter-spacing: 0.16em;
-	text-transform: uppercase;
-	color: var(--steel);
-}
 .brand--onDark .brand__word {
 	color: var(--paper);
-}
-.brand--onDark .brand__sub {
-	color: var(--steel-lt);
 }
 
 .nav {

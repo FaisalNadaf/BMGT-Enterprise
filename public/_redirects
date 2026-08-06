@@ -1,1 +1,6 @@
-/*    /index.html   200
+# First match wins, so the API rule has to sit above the SPA catch-all. Below
+# it, /api/contact would be served index.html and the form would POST into a
+# 200 that is really an HTML page.
+/api/*    /.netlify/functions/:splat    200
+
+/*        /index.html                   200

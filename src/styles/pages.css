@@ -817,6 +817,15 @@ a.cap:hover .cap__title { color: var(--accent-pale); }
   color: var(--accent-ink);
   font-size: 0.9375rem;
 }
+/* Failure needs a colour of its own. The teal confirmation panel with different
+   words inside it still reads as "sent" at a glance, which is the one thing a
+   failed submit must never do. Same red as the :user-invalid field state. */
+.form__status--error {
+  border-color: #B4432F;
+  background: rgba(180, 67, 47, 0.08);
+  color: #8A3324;
+}
+.form__status--error a { color: inherit; font-weight: 600; }
 
 /* Map placeholder — no embed, because a third-party iframe would be the only
    tracker on the site. Swap for the real embed when the client agrees to it. */

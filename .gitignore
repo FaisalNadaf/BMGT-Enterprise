@@ -4,3 +4,11 @@ dist
 .DS_Store
 *.local
 .vite
+
+# SMTP credentials live here in development and in the host's environment
+# panel in production. Never commit them — a mailbox password in git history
+# stays there after the file is deleted.
+.env
+.env.*
+!.env.example
+.netlify

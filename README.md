@@ -1,10 +1,10 @@
 <!-- @format -->
 
-# BMGT Enterprise — React site
+# BMGT — React site
 
-19-route marketing site for BMGT Enterprise, a Dubai-based single-source supplier of
+19-route marketing site for BMGT, a Dubai-based single-source supplier of
 industrial materials. React 18 + Vite + TypeScript, React Router v6, Framer Motion,
-react-helmet-async. No backend, static build.
+react-helmet-async. Static build, plus one serverless function for the contact form.
 
 The HTML/CSS one-pager in the parent folder (`../index.html`, `../styles.css`) is the
 source of truth for brand, copy and tokens; this app ports it and expands it. It has been
@@ -14,19 +14,60 @@ left untouched.
 
 ```bash
 npm install
-npm run dev        # http://localhost:5173
-npm run build      # -> dist/
+npm run dev          # http://localhost:5173 — static app only, no /api
+npm run build        # -> dist/
 npm run preview
 npm run typecheck
+npm run mail:verify  # checks SMTP credentials without sending mail
 ```
+
+The contact form POSTs to `/api/contact`, which only exists under the Netlify
+function runtime. `npm run dev` has no such runtime, so every submit there lands
+in the form's error branch. To work on the form, use `npx netlify-cli dev`
+instead — it serves Vite and the function together on one origin.
+
+## Contact form
+
+`netlify/functions/contact.mts` relays the form over SMTP. It is the only
+server-side code in the project, and it exists so that the mailbox password
+never reaches the browser: anything under `src/` is compiled into the public JS
+bundle, so a credential placed there is readable by every visitor.
+
+Configuration is environment variables only — copy `.env.example` to `.env` for
+local work, and set the same keys in **Site configuration → Environment
+variables** on Netlify for production. `.env` is gitignored; `.env.example` is
+committed and must never carry a real password.
+
+| Variable                 | Notes                                                                |
+| ------------------------ | -------------------------------------------------------------------- |
+| `SMTP_HOST`              | `smtp.hostinger.com`                                                 |
+| `SMTP_PORT`              | `465` implicit TLS, or `587` STARTTLS if 465 is blocked              |
+| `SMTP_USER`              | Full mailbox address. Also the `From:` — Hostinger rejects any other |
+| `SMTP_PASS`              | Mailbox password, **not** the hPanel account password                |
+| `CONTACT_TO`             | Recipient. Defaults to `SMTP_USER`; comma-separate for several       |
+
+Run `npm run mail:verify` after any password change. It authenticates and hangs
+up without sending, so it can be run freely — though repeated *failures* get the
+IP throttled by Hostinger, so confirm the password in hPanel rather than guessing.
+
+The endpoint validates and caps every field, drops submissions that fill the
+hidden honeypot input, strips CR/LF before anything reaches a mail header, and
+allows five posts per IP per minute. SMTP errors are logged to the function log
+and answered with a generic `502` — the raw error quotes the host and username.
+When a submit fails, the form offers a `mailto:` fallback pre-filled with what
+the visitor typed, so an outage never silently loses an enquiry.
 
 ## Deploying
 
 `dist/` is a static SPA and needs a fallback rewrite so deep routes like
 `/industries/construction/granite` serve `index.html` instead of 404ing.
 
-- **Netlify** — `public/_redirects` already does this.
-- **Vercel** — add `{"rewrites":[{"source":"/(.*)","destination":"/index.html"}]}` to `vercel.json`.
+- **Netlify** — `public/_redirects` already does this. The `/api/*` rule above the
+  catch-all must stay first; below it, the contact endpoint would be served
+  `index.html`. Build config is in `netlify.toml`.
+- **Vercel** — add `{"rewrites":[{"source":"/(.*)","destination":"/index.html"}]}` to `vercel.json`,
+  and move the function to `api/contact.ts` — the handler signature is the same
+  Web `Request`/`Response` pair, so only the file location changes.
 - **nginx** — `location / { try_files $uri $uri/ /index.html; }`
 - **Apache** — a `.htaccess` with `FallbackResource /index.html`.
 
@@ -213,10 +254,11 @@ Search for `TODO` (visible teal boxes in the UI) and `CONFIRM` / `CLIENT REVIEW`
    enquiry pre-filled. Wire to Formspree or the client's handler in `pages/Contact.tsx`.
 5. **Legal page** — generic boilerplate, not reviewed by a lawyer, not checked against
    U.A.E. law.
-6. **Registered name** — "Private Limited" is an India/UK suffix; a Dubai entity is
-   normally LLC, FZ-LLC or FZE.
-7. **Wordmark lockup** — "BMGT / ENTERPRISE" set in Archivo + IBM Plex Mono is a
-   composition, not a supplied brand asset.
+6. **Registered name** — the site reads plain "BMGT" throughout. `site.legalName`
+   is the single place a registered suffix would go once confirmed (a Dubai entity
+   is normally LLC, FZ-LLC or FZE).
+7. **Wordmark lockup** — "BMGT" set in Archivo is a composition, not a supplied
+   brand asset.
 8. **Map** — placeholder, not an embed. A Google Maps iframe would be the only
    third-party tracker on the site.
 9. **Opening hours** on `/contact` are a placeholder.

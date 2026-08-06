@@ -1,10 +1,10 @@
 <!-- @format -->
 
-# CLAUDE.md — BMGT Enterprise single-page site
+# CLAUDE.md — BMGT single-page site
 
 ## Task
 
-Build a **one-page marketing site** for BMGT Enterprise Private Limited using **HTML and CSS only**. No JavaScript, no frameworks, no build step.
+Build a **one-page marketing site** for BMGT using **HTML and CSS only**. No JavaScript, no frameworks, no build step.
 
 Deliverables:
 
@@ -136,7 +136,7 @@ Everything below is paraphrased. Use it directly.
 
 ### Company
 
-- **Name:** BMGT Enterprise Private Limited
+- **Name:** BMGT
 - **Phone:** +91 96325 68371
 - **Email:** sales@topexenterprise.com ⚠️ _still the old domain — replace with the BMGT address before building_
 - **Address:** Patvardhan Layout, Vadgaon, Belagavi, Karnataka – 590005, India
@@ -165,7 +165,7 @@ Everything below is paraphrased. Use it directly.
 - H2: **Your global partner in industrial materials**
 - Body:
 
-> Shipbuilding, ship repair, oil and gas, and construction are unforgiving sectors, and BMGT Enterprise Private Limited was built for them. We source and supply industrial materials through a single point of contact, pairing modern sourcing with people who have worked these industries first-hand.
+> Shipbuilding, ship repair, oil and gas, and construction are unforgiving sectors, and BMGT was built for them. We source and supply industrial materials through a single point of contact, pairing modern sourcing with people who have worked these industries first-hand.
 >
 > Every order gets judged on three things: whether it moves fast, whether it holds up on site, and whether it was sourced responsibly. Our catalogue is broad and priced to keep project budgets intact — and we would rather keep a client for a decade than win one purchase order.
 
@@ -211,10 +211,10 @@ Render as a wrapping grid of greyscale logo placeholders. Add a line beneath: _A
 
 ### Footer (4 columns)
 
-1. **BMGT Enterprise Private Limited** — logo placeholder + _BMGT keeps expanding what it supplies and where it supplies it. This site is where we keep that current._
+1. **BMGT** — logo placeholder + _BMGT keeps expanding what it supplies and where it supplies it. This site is where we keep that current._
 2. **Site** — Home, About, Products, Industries, Brands, Contact (in-page anchors)
 3. **Contact** — phone, email, address, all as `tel:` / `mailto:` links
-4. **Legal** — © 2026 BMGT Enterprise Private Limited. All rights reserved.
+4. **Legal** — © 2026 BMGT. All rights reserved.
 
 ---
 

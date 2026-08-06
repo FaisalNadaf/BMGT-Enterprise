@@ -8,13 +8,16 @@
  */
 
 export const site = {
-	name: "BMGT Enterprise",
-	/* CONFIRM: "Private Limited" is an India/UK suffix. A Dubai entity is
-     normally LLC, FZ-LLC or FZE. Used in the About copy and the legal bar. */
-	legalName: "BMGT Enterprise Private Limited",
+	name: "BMGT",
+	/* Kept as its own field even though it currently matches `name`: this is
+     what the About copy and the legal bar print, and it is the one string
+     that should carry a registered suffix once the client confirms one.
+     CONFIRM: the registered entity name (a Dubai entity is normally LLC,
+     FZ-LLC or FZE). Until then both read plain "BMGT". */
+	legalName: "BMGT",
 	tagline: "Strong foundations. Supplied.",
 	description:
-		"BMGT Enterprise is a single-source supplier of industrial materials to shipbuilding, oil & gas, construction and general engineering. Based in Dubai, U.A.E. Supplying worldwide.",
+		"BMGT is a single-source supplier of industrial materials to shipbuilding, oil & gas, construction and general engineering. Based in Dubai, U.A.E. Supplying worldwide.",
 
 	phone: {
 		display: "+971 54 777 8655",

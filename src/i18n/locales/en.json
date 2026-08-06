@@ -94,7 +94,7 @@
 		},
 		"about": {
 			"title": "About Us",
-			"description": "BMGT Enterprise sources and supplies industrial materials to shipbuilding, oil & gas, construction and general engineering through a single point of contact. Based in Dubai, U.A.E.",
+			"description": "BMGT sources and supplies industrial materials to shipbuilding, oil & gas, construction and general engineering through a single point of contact. Based in Dubai, U.A.E.",
 			"heroEyebrow": "About",
 			"heroTitle": "Your global partner in industrial materials",
 			"heroSub": "Built for unforgiving sectors, run by people who have worked in them.",
@@ -121,7 +121,7 @@
 		},
 		"products": {
 			"title": "Products",
-			"description": "Eight supply categories — electrical, valves and pumps, mechanical, marine, steel, construction, granite and PPE. Supplied by BMGT Enterprise, Dubai.",
+			"description": "Eight supply categories — electrical, valves and pumps, mechanical, marine, steel, construction, granite and PPE. Supplied by BMGT, Dubai.",
 			"heroEyebrow": "Products",
 			"heroTitle": "What we supply",
 			"heroSub": "Eight categories, one point of contact. Send the spec and the quantity — we quote from stock or source it to grade.",
@@ -133,7 +133,7 @@
 			"viewCategory": "View category"
 		},
 		"product": {
-			"description": "{{name}} — {{blurb}} Supplied by BMGT Enterprise, Dubai.",
+			"description": "{{name}} — {{blurb}} Supplied by BMGT, Dubai.",
 			"heroEyebrow": "Products",
 			"overviewEyebrow": "Overview",
 			"overviewTitle": "What we supply",
@@ -148,7 +148,7 @@
 			"crumbProducts": "Products"
 		},
 		"industry": {
-			"description": "{{name}} — {{blurb}} BMGT Enterprise supplies industrial materials into this sector from Dubai, worldwide.",
+			"description": "{{name}} — {{blurb}} BMGT supplies industrial materials into this sector from Dubai, worldwide.",
 			"heroEyebrow": "Industries",
 			"capabilityEyebrow": "Capability",
 			"capabilityTitle": "How we work in this sector",
@@ -171,7 +171,7 @@
 		},
 		"brands": {
 			"title": "Brands",
-			"description": "Authorised and stocked lines from established industrial manufacturers, supplied by BMGT Enterprise, Dubai.",
+			"description": "Authorised and stocked lines from established industrial manufacturers, supplied by BMGT, Dubai.",
 			"heroEyebrow": "Brands",
 			"heroTitle": "Lines we carry",
 			"manufacturersEyebrow": "Manufacturers",
@@ -186,7 +186,7 @@
 		},
 		"contact": {
 			"title": "Contact Us",
-			"description": "Contact BMGT Enterprise — {{phone}}, {{email}}. Meydan Grandstand, Nad Al Sheba, Dubai, U.A.E.",
+			"description": "Contact BMGT — {{phone}}, {{email}}. Meydan Grandstand, Nad Al Sheba, Dubai, U.A.E.",
 			"heroEyebrow": "Contact",
 			"heroTitle": "Tell us what the project needs.",
 			"heroSub": "Send the spec, the quantity and the date. We will come back with how we would supply it.",
@@ -200,8 +200,11 @@
 			"required": "(required)",
 			"messagePlaceholder": "Spec, quantity and the date you need it on site.",
 			"submit": "Send enquiry",
-			"formNote": "No backend is wired up yet — submitting opens your mail client with the enquiry filled in, addressed to {{email}}.",
-			"sent": "Your mail client should have opened with the enquiry addressed to {{email}}. If nothing happened, email us directly.",
+			"sending": "Sending…",
+			"sent": "Thank you — your enquiry has been sent to {{email}}. We usually come back within one working day.",
+			"error": "That did not send. Please try again, or send the enquiry straight from your own mail app.",
+			"errorRetry": "Open in mail app",
+			"errorBusy": "Several enquiries have gone out from here in the last minute. Give it a moment, then send again.",
 			"subject": "Enquiry from {{name}}",
 			"subjectWithCompany": "Enquiry from {{name}} — {{company}}",
 			"panelPhone": "Phone",
@@ -211,7 +214,7 @@
 			"hours": "Sunday to Thursday, 09:00 – 18:00 (GST)",
 			"locationEyebrow": "Location",
 			"locationTitle": "Meydan Grandstand, Dubai",
-			"mapTitle": "Map showing BMGT Enterprise at Meydan Grandstand, Nad Al Sheba, Dubai",
+			"mapTitle": "Map showing BMGT at Meydan Grandstand, Nad Al Sheba, Dubai",
 			"openInMaps": "Open in Google Maps",
 			"mapLang": "en",
 			"callUs": "Call us",
@@ -221,7 +224,7 @@
 		},
 		"legal": {
 			"title": "Legal",
-			"description": "Privacy policy, terms of use and disclaimer for BMGT Enterprise.",
+			"description": "Privacy policy, terms of use and disclaimer for BMGT.",
 			"heroEyebrow": "Legal",
 			"heroTitle": "Privacy, terms and disclaimer",
 			"heroSub": "Placeholder text pending the client's own legal review.",
@@ -271,7 +274,7 @@
 		},
 		"notFound": {
 			"title": "Page not found",
-			"description": "That page does not exist on the BMGT Enterprise site.",
+			"description": "That page does not exist on the BMGT site.",
 			"heroEyebrow": "404 — Not found",
 			"heroTitle": "That page is not here",
 			"heroSub": "The address may be mistyped, or the page may have moved. The eight supply categories are below, or start again from the home page.",
@@ -890,7 +893,7 @@
 		},
 		"site": {
 			"tagline": "Strong foundations. Supplied.",
-			"description": "BMGT Enterprise is a single-source supplier of industrial materials to shipbuilding, oil & gas, construction and general engineering. Based in Dubai, U.A.E. Supplying worldwide.",
+			"description": "BMGT is a single-source supplier of industrial materials to shipbuilding, oil & gas, construction and general engineering. Based in Dubai, U.A.E. Supplying worldwide.",
 			"addressShort": "Nad Al Sheba, Dubai, U.A.E.",
 			"addressLines": [
 				"Meydan Grandstand, 6th Floor,",

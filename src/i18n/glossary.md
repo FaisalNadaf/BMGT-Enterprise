@@ -1,6 +1,6 @@
 <!-- @format -->
 
-# Arabic glossary — BMGT Enterprise
+# Arabic glossary — BMGT
 
 Every recurring term has **one** Arabic rendering. If you add copy, take the term
 from here rather than re-deciding it; two renderings of "valve" across two pages is
@@ -13,7 +13,7 @@ restrained and concrete — short sentences, no marketing inflation. Keep that.
 
 Company name, manufacturer marks, email addresses, phone numbers, URLs.
 
-`BMGT Enterprise` · `Legrand` · `Black+Decker` · `FAG` · `Schneider Electric` ·
+`BMGT` · `Legrand` · `Black+Decker` · `FAG` · `Schneider Electric` ·
 `Makita` · `Polycab` · `SKF` · `Janatics` · `ELGi` · `Kirloskar` · `Siemens` ·
 `Sales@bmgt.ae` · `+971 54 777 8655` · `Cubiccode`
 

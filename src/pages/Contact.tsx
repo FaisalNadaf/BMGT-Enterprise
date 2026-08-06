@@ -18,40 +18,42 @@ type Fields = {
 
 const EMPTY: Fields = { name: '', company: '', email: '', phone: '', message: '' }
 
+/** `busy` is the rate-limit response specifically — it needs its own wording,
+    since "try again" is exactly the wrong advice for it. */
+type Status = 'idle' | 'sending' | 'sent' | 'error' | 'busy'
+
 export default function Contact() {
-  const { t } = useLocale()
+  const { t, locale } = useLocale()
   const localSite = useSite()
   /* Google takes its own language code; ar renders the map labels in Arabic. */
   const mapLang = t('ui.contact.mapLang')
   const [fields, setFields] = useState<Fields>(EMPTY)
-  const [sent, setSent] = useState(false)
+  const [status, setStatus] = useState<Status>('idle')
+  /* Honeypot value. Kept out of `fields` so there is no path by which it can be
+     rendered back into the form or posted as a real answer. */
+  const [trap, setTrap] = useState('')
 
   const update =
     (key: keyof Fields) =>
     (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       setFields((prev) => ({ ...prev, [key]: event.target.value }))
-      setSent(false)
+      /* Editing after a result clears the old banner — a success message still
+         sitting above a half-typed second enquiry reads as if that one sent. */
+      setStatus((prev) => (prev === 'idle' ? prev : 'idle'))
     }
 
   /**
-   * TODO: wire to Formspree/email service.
+   * Fallback route: hands the enquiry to the visitor's own mail client with
+   * everything pre-filled. Offered only when the POST fails, so a submission is
+   * never silently lost even if the mail server is down.
    *
-   * Until there is a backend, submitting hands the enquiry to the visitor's own
-   * mail client with everything pre-filled. That is honest — nothing is
-   * silently dropped — but it does depend on a configured mail client, which is
-   * why the direct addresses sit beside the form rather than behind it.
-   *
-   * To switch: POST `fields` to the endpoint, await the response, and set
-   * `sent` from it instead of opening the mailto.
+   * Labels follow the page language — the recipient reads it in whatever
+   * language the sender was using.
    */
-  const onSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-
+  const mailtoHref = () => {
     const subject = fields.company
       ? t('ui.contact.subjectWithCompany', { name: fields.name, company: fields.company })
       : t('ui.contact.subject', { name: fields.name })
-    /* Labels in the mail body follow the page language too — the recipient
-       reads it in whatever language the sender was using. */
     const body = [
       `${t('ui.contact.name')}: ${fields.name}`,
       `${t('ui.contact.company')}: ${fields.company || '—'}`,
@@ -61,10 +63,45 @@ export default function Contact() {
       fields.message,
     ].join('\n')
 
-    window.location.href = `mailto:${site.emails.sales}?subject=${encodeURIComponent(
+    return `mailto:${site.emails.sales}?subject=${encodeURIComponent(
       subject,
     )}&body=${encodeURIComponent(body)}`
-    setSent(true)
+  }
+
+  /**
+   * POSTs to the serverless function in netlify/functions/contact.mts, which
+   * relays over SMTP. Nothing about the mail account is reachable from here —
+   * the browser only ever sees this endpoint.
+   *
+   * Note `netlify dev` is required locally; plain `npm run dev` has no function
+   * runtime, so every submit lands in the error branch.
+   */
+  const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    if (status === 'sending') return
+    setStatus('sending')
+
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...fields, website: trap, locale }),
+      })
+
+      if (res.status === 429) {
+        setStatus('busy')
+        return
+      }
+      if (!res.ok) throw new Error(`contact: HTTP ${res.status}`)
+
+      /* Clearing on success is what makes the confirmation believable, and it
+         stops a double-click resending the same enquiry. */
+      setFields(EMPTY)
+      setTrap('')
+      setStatus('sent')
+    } catch {
+      setStatus('error')
+    }
   }
 
   return (
@@ -174,21 +211,52 @@ export default function Contact() {
                 />
               </div>
 
-              <div className="about__actions">
-                <Button type="submit" size="lg" arrow>
-                  {t('ui.contact.submit')}
-                </Button>
+              {/* Honeypot. Off-screen and out of the tab order, so no human
+                  meets it; the bots that autofill every input in the DOM fill
+                  it every time. aria-hidden keeps it out of the accessibility
+                  tree, and tabIndex -1 is what makes that honest. */}
+              <div className="visually-hidden" aria-hidden="true">
+                <label htmlFor="website">Website</label>
+                <input
+                  id="website"
+                  name="website"
+                  type="text"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  value={trap}
+                  onChange={(event) => setTrap(event.target.value)}
+                />
               </div>
 
-           
+              <div className="about__actions">
+                <Button type="submit" size="lg" arrow loading={status === 'sending'}>
+                  {status === 'sending' ? t('ui.contact.sending') : t('ui.contact.submit')}
+                </Button>
+              </div>
 
               {/* The live region itself is always mounted — a region that
                   appears at the same moment its text does is often missed by
                   screen readers. Only the message inside it is conditional. */}
               <div role="status" aria-live="polite">
-                {sent && (
+                {status === 'sent' && (
                   <p className="form__status">
                     {t('ui.contact.sent', { email: site.emails.sales })}
+                  </p>
+                )}
+
+                {status === 'busy' && (
+                  <p className="form__status form__status--error">
+                    {t('ui.contact.errorBusy')}
+                  </p>
+                )}
+
+                {/* A failure that only says "failed" loses the enquiry. The
+                    mailto carries everything already typed into the visitor's
+                    own mail client, so the message survives the outage. */}
+                {status === 'error' && (
+                  <p className="form__status form__status--error">
+                    {t('ui.contact.error')}{' '}
+                    <a href={mailtoHref()}>{t('ui.contact.errorRetry')}</a>
                   </p>
                 )}
               </div>
