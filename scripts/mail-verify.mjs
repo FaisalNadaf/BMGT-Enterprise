@@ -10,7 +10,35 @@
  * Reads .env (see .env.example). Run it after changing the mailbox password,
  * and once against production values before announcing the form works.
  */
+import { readFileSync } from 'node:fs'
 import nodemailer from 'nodemailer'
+
+/**
+ * Every dotenv-style parser — Node's --env-file and Vite's loadEnv both — treats
+ * an unquoted `#` as the start of an inline comment. A password containing one
+ * therefore arrives truncated, and the only symptom is a 535 that is completely
+ * indistinguishable from a wrong password. This cost a long debugging session
+ * once; it is not allowed to cost a second.
+ */
+function warnUnquoted() {
+  let line
+  try {
+    line = readFileSync('.env', 'utf8')
+      .split(/\r?\n/)
+      .find((l) => l.trimStart().startsWith('SMTP_PASS='))
+  } catch {
+    return
+  }
+  const raw = line?.slice(line.indexOf('=') + 1).trim()
+  if (raw && !/^['"]/.test(raw) && raw.includes('#')) {
+    console.error(
+      "WARNING: SMTP_PASS contains '#' and is not quoted. Everything from the '#'\n" +
+        "onwards is being stripped as a comment. Wrap it in single quotes:\n" +
+        "  SMTP_PASS='your#password'\n",
+    )
+  }
+}
+warnUnquoted()
 
 const { SMTP_HOST = 'smtp.hostinger.com', SMTP_PORT = '465', SMTP_USER, SMTP_PASS } = process.env
 

@@ -14,17 +14,18 @@ left untouched.
 
 ```bash
 npm install
-npm run dev          # http://localhost:5173 — static app only, no /api
+npm run dev          # http://localhost:5173 — serves /api/contact too
 npm run build        # -> dist/
-npm run preview
+npm run preview      # static only: /api/contact is not served here
 npm run typecheck
 npm run mail:verify  # checks SMTP credentials without sending mail
 ```
 
-The contact form POSTs to `/api/contact`, which only exists under the Netlify
-function runtime. `npm run dev` has no such runtime, so every submit there lands
-in the form's error branch. To work on the form, use `npx netlify-cli dev`
-instead — it serves Vite and the function together on one origin.
+The contact form POSTs to `/api/contact`. In production that is a Netlify
+function; in `npm run dev` it is mounted by `scripts/contact-dev-plugin.ts`,
+which runs the same handler through Vite's middleware. So the form works
+end-to-end locally, with no need for `netlify-cli`. `npm run preview` serves the
+static build only, so the form errors there — use `npm run dev`.
 
 ## Contact form
 
